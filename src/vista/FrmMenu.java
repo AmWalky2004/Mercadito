@@ -145,6 +145,7 @@ public java.awt.Font usarMontserrat(int estilo, float tamano) {
         gestionar_categoria.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/categorias.png"))); // NOI18N
         gestionar_categoria.setText("Gestionar Categoria");
         gestionar_categoria.setPreferredSize(new java.awt.Dimension(180, 30));
+        gestionar_categoria.addActionListener(this::gestionar_categoriaActionPerformed);
         jMenu4.add(gestionar_categoria);
 
         jMenuBar1.add(jMenu4);
@@ -261,6 +262,14 @@ public java.awt.Font usarMontserrat(int estilo, float tamano) {
         jDesktopPane_menu.add(interCategoria);
         interCategoria.setVisible(true);
     }//GEN-LAST:event_nueva_categoriaActionPerformed
+
+    private void gestionar_categoriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gestionar_categoriaActionPerformed
+        // TODO add your handling code here:
+        InterGestionarCategorias interGestionarCategorias = new InterGestionarCategorias();
+        jDesktopPane_menu.add(interGestionarCategorias);
+        interGestionarCategorias.setVisible(true);
+        
+    }//GEN-LAST:event_gestionar_categoriaActionPerformed
 
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(() -> new FrmMenu().setVisible(true));
