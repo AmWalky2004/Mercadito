@@ -221,16 +221,31 @@ public class FrmLogin extends javax.swing.JFrame {
     private void Login() {
         if (!txt_usuario.getText().isEmpty() && !txt_password.getText().isEmpty()) {
 
-            Ctrl_Usuario controlUsuario = new Ctrl_Usuario();
-            Usuario usuario = new Usuario();
+            // Controlador del Gerente
+            controlador.Ctrl_UsuarioGerente controlGerente = new controlador.Ctrl_UsuarioGerente();
+            modelo.Usuario usuario = new modelo.Usuario();
+            
             usuario.setUsuario(txt_usuario.getText().trim());
             usuario.setPassword(txt_password.getText().trim());
-            if (controlUsuario.loginUser(usuario)) {
-                //JOptionPane.showMessageDialog(null, "Ingreso Satisfactorio.");
-                FrmMenu menu = new FrmMenu();
-                menu.setVisible(true);
+            
+            //RECIBIMOS EL NÚMERO DE ESTADO DE MYSQL (1, 2 o 0)
+            int tipoUsuario = controlGerente.loginUserGerente(usuario);
+
+            // DECIDIMOS A QUÉ OFICINA VA SEGÚN SU NÚMERO
+            if (tipoUsuario == 1) { 
+                // Si el estado es 1, es Administrador
+                FrmMenu menuAdmin = new FrmMenu();
+                menuAdmin.setVisible(true);
                 this.dispose();
-            } else {
+                
+            } else if (tipoUsuario == 2) { 
+                // Si el estado es 2, es Gerente
+                vista.FrmMenuGerente menuGerente = new vista.FrmMenuGerente();
+                menuGerente.setVisible(true);
+                this.dispose();
+                
+            } else { 
+                // Si devuelve 0, significa que los datos están mal escritos
                 JOptionPane.showMessageDialog(null, "Usuario o clave incorrecta.");
             }
 

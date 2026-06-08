@@ -12,7 +12,7 @@ public class Ctrl_UsuarioGerente {
 
     // Método para validar el ingreso del Gerente
     public int loginUserGerente(Usuario objeto) {
-        int tipoUsuario = 0; 
+        int tipoUsuario = 2; 
         Connection cn = Conexion.conectar();
         
         String sql = "select usuario, password, estado from tb_usuario where usuario = '" 
