@@ -40,7 +40,6 @@ public class FrmMenuGerente extends javax.swing.JFrame {
         jMenu6 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(150, 50));
 
         jMenu1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/producto.png"))); // NOI18N
         jMenu1.setText("Adminitrar producto");
