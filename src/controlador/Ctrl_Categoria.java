@@ -8,11 +8,12 @@ import java.sql.ResultSet;
 import modelo.Categoria;
 
 public class Ctrl_Categoria {
-    
+    /*
+    Metodo para guardar las categorias
+    */
     public boolean guardar(Categoria objeto){
         
         boolean respuesta = false;
-        
         Connection cn = conexion.Conexion.conectar();
         try {
             PreparedStatement consulta = cn.prepareStatement("insert into tb_categoria values(?, ?, ?)");
@@ -22,14 +23,12 @@ public class Ctrl_Categoria {
             
             if(consulta.executeUpdate() > 0){
                 respuesta = true;
-                
             }
             
             cn.close();
-
             
         } catch (SQLException e) {
-            System.out.println("ERROR AL GUARDAR LA CATEGORIA: " + e);
+            System.out.println("ERROR AL GUARDAR LA CATEGORIA: " + e.getMessage());
         }
         
         return respuesta;
@@ -43,19 +42,71 @@ public class Ctrl_Categoria {
         Statement st;             
 
         try {
-            
             Connection cn = Conexion.conectar();
             st = cn.createStatement();
             ResultSet rs = st.executeQuery(sql);
             while (rs.next()) {    
                 respuesta = true;
-                
             }
             
+            // CORRECCIÓN 3: Cerramos la conexión para no saturar MySQL
+            cn.close();
             
         } catch (SQLException e) {
-            System.out.println("ERROR AL CONSULTAR LA CATEGORIA: " + e);
+            System.out.println("ERROR AL CONSULTAR LA CATEGORIA: " + e.getMessage());
         }        
+        return respuesta;
+    }
+    
+    /*
+    Metodo para actualizar las categorias
+    */
+    public boolean actualizar(Categoria objeto, int idCategoria){
+        
+        boolean respuesta = false;
+        Connection cn = conexion.Conexion.conectar();
+        try {
+            // CORRECCIÓN 1: Usamos '?' para el ID de forma segura y sin comillas de texto
+            PreparedStatement consulta = cn.prepareStatement("update tb_categoria set descripcion=? where idCategoria = ?");
+            consulta.setString(1, objeto.getDescripcion());
+            consulta.setInt(2, idCategoria);
+             
+            if(consulta.executeUpdate() > 0){
+                respuesta = true;
+            }
+            
+            cn.close();
+            
+        } catch (SQLException e) {
+            System.out.println("ERROR AL ACTUALIZAR LA CATEGORIA: " + e.getMessage());
+        }
+        
+        return respuesta;
+    }
+    
+    /*
+    Metodo para eliminar las categorias
+    */
+    public boolean eliminar(int idCategoria){
+        
+        boolean respuesta = false;
+        Connection cn = Conexion.conectar();
+        try {
+            // CORRECCIÓN 1: Usamos '?' para pasar el ID numérico correctamente
+            PreparedStatement consulta = cn.prepareStatement("delete from tb_categoria where idCategoria = ?");
+            consulta.setInt(1, idCategoria);
+            
+            // CORRECCIÓN 2: Eliminamos la línea duplicada de executeUpdate()
+            if(consulta.executeUpdate() > 0){
+                respuesta = true;
+            }
+            
+            cn.close();
+            
+        } catch (SQLException e) {
+            System.out.println("ERROR AL ELIMINAR LA CATEGORIA: " + e.getMessage());
+        }
+        
         return respuesta;
     }
     
