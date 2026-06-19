@@ -12,8 +12,8 @@ public class FrmMenu extends javax.swing.JFrame {
 
     public FrmMenu() {
         initComponents();
-        this.setSize(new Dimension(1200, 700));
-        this.setExtendedState(this.MAXIMIZED_BOTH);
+        this.setSize(new Dimension(1200, 700)); // TAMAÑO DEL PANEL
+        this.setExtendedState(this.MAXIMIZED_BOTH); //MAXIMIZAR LA VENTANA
         this.setLocationRelativeTo(null);
         this.setTitle("Sistema de Ventas - MENU PRINCIPAL");
         this.setLayout(null);
@@ -231,6 +231,9 @@ public java.awt.Font usarMontserrat(int estilo, float tamano) {
 
     private void nuevo_usuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nuevo_usuarioActionPerformed
         // TODO add your handling code here:
+        InterNuevoUsuario interNuevoUsuario = new InterNuevoUsuario();
+        jDesktopPane_menu.add(interNuevoUsuario);
+        interNuevoUsuario.setVisible(true);
     }//GEN-LAST:event_nuevo_usuarioActionPerformed
 
     private void gestionar_usuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gestionar_usuarioActionPerformed

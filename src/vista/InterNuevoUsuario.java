@@ -1,20 +1,17 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JInternalFrame.java to edit this template
- */
 package vista;
 
-/**
- *
- * @author IK
- */
+import controlador.Ctrl_Usuario;
+import java.awt.Dimension;
+import javax.swing.JOptionPane;
+import modelo.Usuario;
+
 public class InterNuevoUsuario extends javax.swing.JInternalFrame {
 
-    /**
-     * Creates new form InterNuevoUsuario
-     */
     public InterNuevoUsuario() {
         initComponents();
+        this.setSize(new Dimension(400, 300));
+        this.setTitle("NUEVO CLIENTE");
+        
     }
 
     /**
@@ -26,18 +23,139 @@ public class InterNuevoUsuario extends javax.swing.JInternalFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        txt_apellido = new javax.swing.JTextField();
+        txt_usuario = new javax.swing.JTextField();
+        txt_telefono = new javax.swing.JTextField();
+        txt_nombre = new javax.swing.JTextField();
+        txt_contraseña = new javax.swing.JPasswordField();
+        BOTONGUARDAR = new javax.swing.JButton();
         wallpaper = new javax.swing.JLabel();
 
+        setClosable(true);
+        setIconifiable(true);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel1.setText("NUEVO USUARIO");
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(125, 10, -1, -1));
+
+        jLabel2.setText("NOMBRE");
+        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 50, -1, -1));
+
+        jLabel3.setText("APELLIDO");
+        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 80, -1, -1));
+
+        jLabel4.setText("USUARIO");
+        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 110, -1, -1));
+
+        jLabel5.setText("CONTRASEÑA");
+        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 140, -1, -1));
+
+        jLabel6.setText("TELEFONO");
+        getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 170, -1, -1));
+
+        txt_apellido.addActionListener(this::txt_apellidoActionPerformed);
+        getContentPane().add(txt_apellido, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 80, 150, -1));
+        getContentPane().add(txt_usuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 110, 150, -1));
+        getContentPane().add(txt_telefono, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 170, 150, -1));
+
+        txt_nombre.addActionListener(this::txt_nombreActionPerformed);
+        getContentPane().add(txt_nombre, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 50, 150, -1));
+
+        txt_contraseña.addActionListener(this::txt_contraseñaActionPerformed);
+        getContentPane().add(txt_contraseña, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 140, 150, -1));
+
+        BOTONGUARDAR.setBackground(new java.awt.Color(204, 204, 204));
+        BOTONGUARDAR.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        BOTONGUARDAR.setForeground(new java.awt.Color(51, 51, 51));
+        BOTONGUARDAR.setText("Guardar");
+        BOTONGUARDAR.addActionListener(this::BOTONGUARDARActionPerformed);
+        getContentPane().add(BOTONGUARDAR, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 210, -1, -1));
+
         wallpaper.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/fondo2.jpg"))); // NOI18N
-        getContentPane().add(wallpaper, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 400, 400));
+        getContentPane().add(wallpaper, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 390, 270));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void BOTONGUARDARActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BOTONGUARDARActionPerformed
+        if (txt_nombre.getText().isEmpty() || txt_apellido.getText().isEmpty() || txt_usuario.getText().isEmpty()
+                || txt_contraseña.getText().isEmpty() || txt_telefono.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "COMPLETE LOS CAMPOS");
+            
+        } else {
+            
+            //VALIDAMOS SI EL USUARIO ESTA REGISTRADO
+            Usuario usuario = new Usuario();
+            Ctrl_Usuario controlUsuario = new Ctrl_Usuario();
+            if (!controlUsuario.existeUsuario(txt_usuario.getText().trim())) {
+               //ENVIAMOS DATOS DEL USUARIO
+                usuario.setNombre(txt_nombre.getText().trim());
+                usuario.setApellido(txt_apellido.getText().trim());
+                usuario.setUsuario(txt_usuario.getText().trim());
+                usuario.setPassword(txt_contraseña.getText().trim());
+                usuario.setTelefono(txt_telefono.getText().trim());
+                usuario.setEstado(1);
+                
+                if (controlUsuario.guardar(usuario)) {
+                    JOptionPane.showMessageDialog(null, "¡USUARIO REGISTRADO!");
+                } else {
+                    JOptionPane.showMessageDialog(null, "¡ERROR AL REGISTRAR EL USUARIO!");
+                }
+                
+            } else {
+                JOptionPane.showMessageDialog(null, "ESTE USUARIO YA ESTA REGISTRADO");
+            }
+        }
+             
+        
+    }//GEN-LAST:event_BOTONGUARDARActionPerformed
+
+    private void txt_apellidoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_apellidoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txt_apellidoActionPerformed
+
+    private void txt_nombreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_nombreActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txt_nombreActionPerformed
+
+    private void txt_contraseñaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_contraseñaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txt_contraseñaActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton BOTONGUARDAR;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JTextField txt_apellido;
+    private javax.swing.JPasswordField txt_contraseña;
+    private javax.swing.JTextField txt_nombre;
+    private javax.swing.JTextField txt_telefono;
+    private javax.swing.JTextField txt_usuario;
     private javax.swing.JLabel wallpaper;
     // End of variables declaration//GEN-END:variables
+ 
+/**
+ * METODO PARA LIMPIAR CAMPOS
+ * 
+ */
+private void Limpiar() {
+    txt_nombre.setText("");
+    txt_apellido.setText("");
+    txt_usuario.setText("");
+    txt_contraseña.setText("");
+    txt_telefono.setText("");
 }
+}
+

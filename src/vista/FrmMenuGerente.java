@@ -12,18 +12,18 @@ public class FrmMenuGerente extends javax.swing.JFrame {
      */
     public FrmMenuGerente() {
         initComponents();
-        this.setSize(800, 600); // Tamaño del panel
+        this.setSize(960, 600); // Tamaño del panel
         this.setResizable(false); // Fijo
         this.setLocationRelativeTo(null); // Centrado en pantalla
         this.setTitle("MERCADITO - PANEL DE GERENTE"); // Título oficial
-        
+
         // 2. Inicializamos el DesktopPane y lo añadimos a la ventana
         jDesktopPane_menu = new JDesktopPane();
-        jDesktopPane_menu.setBounds(0, 0, 800, 600); // Que ocupe toda la ventana
+        jDesktopPane_menu.setBounds(0, 0, 960, 600); // Que ocupe toda la ventana
         this.add(jDesktopPane_menu);
     }
-    
-@SuppressWarnings("unchecked")
+
+    @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -94,11 +94,11 @@ public class FrmMenuGerente extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 632, Short.MAX_VALUE)
+            .addGap(0, 960, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 408, Short.MAX_VALUE)
+            .addGap(0, 549, Short.MAX_VALUE)
         );
 
         pack();
@@ -107,19 +107,19 @@ public class FrmMenuGerente extends javax.swing.JFrame {
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jMenuItem1ActionPerformed
- 
+
     {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 800, Short.MAX_VALUE)
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 800, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 600, Short.MAX_VALUE)
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 600, Short.MAX_VALUE)
         );
 
         pack();
@@ -149,7 +149,6 @@ public class FrmMenuGerente extends javax.swing.JFrame {
 
     // Variables declaration - do not modify                     
     // End of variables declaration                   
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItem1;
