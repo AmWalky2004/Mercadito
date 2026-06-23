@@ -1,8 +1,7 @@
-
 package modelo;
 
 public class Usuario {
-//Atributos
+    // Atributos
     private int idUsuario;
     private String nombre;
     private String apellido;
@@ -11,19 +10,18 @@ public class Usuario {
     private String telefono;
     private int estado;
     
-    //Constructor
-    public Usuario(){
+    // Constructor
+    public Usuario() {
         this.idUsuario = 0;
         this.nombre = "";
         this.apellido = "";
         this.usuario = "";
         this.password = "";
+        this.telefono = "";
         this.estado = 0;
-        
     }
     
-    //set and get
-
+    // Getters y Setters
     public int getIdUsuario() {
         return idUsuario;
     }
@@ -79,6 +77,4 @@ public class Usuario {
     public void setEstado(int estado) {
         this.estado = estado;
     }
-    
-       
 }

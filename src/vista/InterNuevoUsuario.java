@@ -11,7 +11,9 @@ public class InterNuevoUsuario extends javax.swing.JInternalFrame {
         initComponents();
         this.setSize(new Dimension(400, 300));
         this.setTitle("NUEVO CLIENTE");
-        
+        txt_contraseña.setVisible(true);
+        txt_contraseña_visible.setVisible(false);
+
     }
 
     /**
@@ -29,11 +31,15 @@ public class InterNuevoUsuario extends javax.swing.JInternalFrame {
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        verclave = new javax.swing.JCheckBox();
         txt_apellido = new javax.swing.JTextField();
         txt_usuario = new javax.swing.JTextField();
-        txt_telefono = new javax.swing.JTextField();
         txt_nombre = new javax.swing.JTextField();
+        txt_telefono = new javax.swing.JTextField();
         txt_contraseña = new javax.swing.JPasswordField();
+        txt_contraseña_visible = new javax.swing.JTextField();
+        combobox_rol = new javax.swing.JComboBox<>();
         BOTONGUARDAR = new javax.swing.JButton();
         wallpaper = new javax.swing.JLabel();
 
@@ -60,26 +66,42 @@ public class InterNuevoUsuario extends javax.swing.JInternalFrame {
         jLabel6.setText("TELEFONO");
         getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 170, -1, -1));
 
+        jLabel7.setText("ESTADO/ROL");
+        getContentPane().add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 200, -1, -1));
+
+        verclave.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                verclaveMouseClicked(evt);
+            }
+        });
+        verclave.addActionListener(this::verclaveActionPerformed);
+        getContentPane().add(verclave, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 145, -1, -1));
+
         txt_apellido.addActionListener(this::txt_apellidoActionPerformed);
         getContentPane().add(txt_apellido, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 80, 150, -1));
         getContentPane().add(txt_usuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 110, 150, -1));
-        getContentPane().add(txt_telefono, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 170, 150, -1));
 
         txt_nombre.addActionListener(this::txt_nombreActionPerformed);
         getContentPane().add(txt_nombre, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 50, 150, -1));
+        getContentPane().add(txt_telefono, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 170, 150, -1));
 
         txt_contraseña.addActionListener(this::txt_contraseñaActionPerformed);
         getContentPane().add(txt_contraseña, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 140, 150, -1));
+        getContentPane().add(txt_contraseña_visible, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 140, 150, -1));
+
+        combobox_rol.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccionar", "Administrador", "Gerente", "Cajero" }));
+        combobox_rol.addActionListener(this::combobox_rolActionPerformed);
+        getContentPane().add(combobox_rol, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 200, 150, -1));
 
         BOTONGUARDAR.setBackground(new java.awt.Color(204, 204, 204));
         BOTONGUARDAR.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         BOTONGUARDAR.setForeground(new java.awt.Color(51, 51, 51));
         BOTONGUARDAR.setText("Guardar");
         BOTONGUARDAR.addActionListener(this::BOTONGUARDARActionPerformed);
-        getContentPane().add(BOTONGUARDAR, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 210, -1, -1));
+        getContentPane().add(BOTONGUARDAR, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 240, -1, -1));
 
         wallpaper.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/fondo2.jpg"))); // NOI18N
-        getContentPane().add(wallpaper, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 390, 270));
+        getContentPane().add(wallpaper, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 390, 290));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -87,34 +109,52 @@ public class InterNuevoUsuario extends javax.swing.JInternalFrame {
     private void BOTONGUARDARActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BOTONGUARDARActionPerformed
         if (txt_nombre.getText().isEmpty() || txt_apellido.getText().isEmpty() || txt_usuario.getText().isEmpty()
                 || txt_contraseña.getText().isEmpty() || txt_telefono.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(null, "COMPLETE LOS CAMPOS");
-            
+            JOptionPane.showMessageDialog(null, "COMPLETE TODOS LOS CAMPOS");
+            return;
+        }
+
+        // Validar rol seleccionado
+        String rolSeleccionado = (String) combobox_rol.getSelectedItem();
+        if (rolSeleccionado == null || rolSeleccionado.equals("Seleccionar")) {
+            JOptionPane.showMessageDialog(null, "SELECCIONE UN ROL");
+            return;
+
         } else {
-            
+
             //VALIDAMOS SI EL USUARIO ESTA REGISTRADO
             Usuario usuario = new Usuario();
             Ctrl_Usuario controlUsuario = new Ctrl_Usuario();
             if (!controlUsuario.existeUsuario(txt_usuario.getText().trim())) {
-               //ENVIAMOS DATOS DEL USUARIO
+                //ENVIAMOS DATOS DEL USUARIO
                 usuario.setNombre(txt_nombre.getText().trim());
                 usuario.setApellido(txt_apellido.getText().trim());
                 usuario.setUsuario(txt_usuario.getText().trim());
                 usuario.setPassword(txt_contraseña.getText().trim());
                 usuario.setTelefono(txt_telefono.getText().trim());
-                usuario.setEstado(1);
-                
+                //Conversion rol-estado
+                int estadoRol = 0;
+                if (rolSeleccionado.equals("Administrador")) {
+                    estadoRol = 1;
+                } else if (rolSeleccionado.equals("Gerente")) {
+                    estadoRol = 2;
+                } else if (rolSeleccionado.equals("Cajero")) {
+                    estadoRol = 3;
+                }
+                usuario.setEstado(estadoRol);
+
                 if (controlUsuario.guardar(usuario)) {
                     JOptionPane.showMessageDialog(null, "¡USUARIO REGISTRADO!");
+                    Limpiar();
                 } else {
                     JOptionPane.showMessageDialog(null, "¡ERROR AL REGISTRAR EL USUARIO!");
                 }
-                
+
             } else {
                 JOptionPane.showMessageDialog(null, "ESTE USUARIO YA ESTA REGISTRADO");
             }
         }
-             
-        
+
+
     }//GEN-LAST:event_BOTONGUARDARActionPerformed
 
     private void txt_apellidoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_apellidoActionPerformed
@@ -129,33 +169,64 @@ public class InterNuevoUsuario extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txt_contraseñaActionPerformed
 
+    private void verclaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_verclaveActionPerformed
+
+    }//GEN-LAST:event_verclaveActionPerformed
+
+    private void verclaveMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_verclaveMouseClicked
+        if (verclave.isSelected() == true) {
+            String pass = "";
+            char[] passIngresado = txt_contraseña.getPassword();
+            for (int i = 0; i < passIngresado.length; i++) {
+                pass += passIngresado[i];
+            }
+            txt_contraseña_visible.setText(pass);
+            txt_contraseña.setVisible(false);
+            txt_contraseña_visible.setVisible(true);
+
+        } else {
+            String passwordIngresado = txt_contraseña_visible.getText().trim();
+            txt_contraseña.setText(passwordIngresado);
+            txt_contraseña.setVisible(true);
+            txt_contraseña_visible.setVisible(false);
+        }
+    }//GEN-LAST:event_verclaveMouseClicked
+
+    private void combobox_rolActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_combobox_rolActionPerformed
+
+    }//GEN-LAST:event_combobox_rolActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton BOTONGUARDAR;
+    private javax.swing.JComboBox<String> combobox_rol;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JTextField txt_apellido;
     private javax.swing.JPasswordField txt_contraseña;
+    private javax.swing.JTextField txt_contraseña_visible;
     private javax.swing.JTextField txt_nombre;
     private javax.swing.JTextField txt_telefono;
     private javax.swing.JTextField txt_usuario;
+    private javax.swing.JCheckBox verclave;
     private javax.swing.JLabel wallpaper;
     // End of variables declaration//GEN-END:variables
- 
-/**
- * METODO PARA LIMPIAR CAMPOS
- * 
- */
-private void Limpiar() {
-    txt_nombre.setText("");
-    txt_apellido.setText("");
-    txt_usuario.setText("");
-    txt_contraseña.setText("");
-    txt_telefono.setText("");
-}
-}
 
+    /**
+     * METODO PARA LIMPIAR CAMPOS
+     *
+     */
+    private void Limpiar() {
+        txt_nombre.setText("");
+        txt_apellido.setText("");
+        txt_usuario.setText("");
+        txt_contraseña.setText("");
+        txt_telefono.setText("");
+        combobox_rol.setSelectedIndex(0);
+    }
+}

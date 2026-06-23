@@ -4,82 +4,111 @@ import conexion.Conexion;
 import java.sql.Connection;
 import modelo.Usuario;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.PreparedStatement;
 import javax.swing.JOptionPane;
 import java.sql.ResultSet;
 
 public class Ctrl_Usuario {
-    
+
     public boolean guardar(Usuario objeto) {
-    boolean respuesta = false;
-    Connection cn = Conexion.conectar();
-    try {
-        PreparedStatement consulta = cn.prepareStatement("insert into tb_usuario values(?,?,?,?,?,?,?)");
-        consulta.setInt(1, 0);//id
-        consulta.setString(2, objeto.getNombre());
-        consulta.setString(3, objeto.getApellido());
-        consulta.setString(4, objeto.getUsuario());
-        consulta.setString(5, objeto.getPassword());
-        consulta.setString(6, objeto.getTelefono());
-        consulta.setInt(7, objeto.getEstado());
-        if (consulta.executeUpdate() > 0) {
-            respuesta = true;
-        }
-        cn.close();
-    } catch (SQLException e) {
-        System.out.println("ERROR AL GUARDAR EL USUARIO: " + e);
-    }
-    return respuesta;
-}
-    
-    public boolean existeUsuario(String usuario) {
-    boolean respuesta = false;
-    String sql = "select usuario from tb_usuario where usuario = '" + usuario + "';";
-    Statement st;
-    try {
-        Connection cn = Conexion.conectar();
-        st = cn.createStatement();
-        ResultSet rs = st.executeQuery(sql);
-        while (rs.next()) {
-            respuesta = true;
-        }
-    } catch (SQLException e) {
-        System.out.println("EEROR AL CONSULTAR EL USUARIO: " + e);
-    }
-    return respuesta;
-}
-    
-    
-    
-    
-/*
- METODO PARA INICIAR SESION    
-    
-    */
-    public boolean loginUser(Usuario objeto) {
-
         boolean respuesta = false;
-
-        Connection cn = Conexion.conectar();
-        String sql = "select usuario, password from tb_usuario where usuario = '" + objeto.getUsuario() + "' and password = '" + objeto.getPassword() + "'";
-        Statement st;
+        Connection cn = null;
+        PreparedStatement consulta = null;
+        
         try {
-
-            st = cn.createStatement();
-
-            ResultSet rs = st.executeQuery(sql);
-
-            while (rs.next()) {
+            cn = Conexion.conectar();
+            
+            String sql = "INSERT INTO tb_usuario (nombre, apellido, usuario, password, telefono, estado) VALUES (?, ?, ?, ?, ?, ?)";
+            consulta = cn.prepareStatement(sql);
+            
+            consulta.setString(1, objeto.getNombre());
+            consulta.setString(2, objeto.getApellido());
+            consulta.setString(3, objeto.getUsuario());
+            consulta.setString(4, objeto.getPassword());
+            consulta.setString(5, objeto.getTelefono());
+            consulta.setInt(6, objeto.getEstado());
+            
+            if (consulta.executeUpdate() > 0) {
                 respuesta = true;
             }
-
+            
         } catch (SQLException e) {
-            System.out.println("Error al Iniciar Sesion");
-            JOptionPane.showMessageDialog(null, "Error al Iniciar Sesion");
-
+            System.out.println("ERROR AL GUARDAR: " + e.getMessage());
+            if (e.getErrorCode() == 1062) {
+                JOptionPane.showMessageDialog(null, "El usuario ya existe");
+            }
+        } finally {
+            try {
+                if (consulta != null) consulta.close();
+                if (cn != null) cn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
         return respuesta;
+    }
 
+    public boolean existeUsuario(String usuario) {
+        boolean respuesta = false;
+        Connection cn = null;
+        PreparedStatement consulta = null;
+        ResultSet rs = null;
+        
+        try {
+            cn = Conexion.conectar();
+            String sql = "SELECT usuario FROM tb_usuario WHERE usuario = ?";
+            consulta = cn.prepareStatement(sql);
+            consulta.setString(1, usuario);
+            rs = consulta.executeQuery();
+            
+            if (rs.next()) {
+                respuesta = true;
+            }
+            
+        } catch (SQLException e) {
+            System.out.println("ERROR AL CONSULTAR: " + e.getMessage());
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (consulta != null) consulta.close();
+                if (cn != null) cn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return respuesta;
+    }
+
+    public boolean loginUser(Usuario objeto) {
+        boolean respuesta = false;
+        Connection cn = null;
+        PreparedStatement consulta = null;
+        ResultSet rs = null;
+        
+        try {
+            cn = Conexion.conectar();
+            String sql = "SELECT usuario, password FROM tb_usuario WHERE usuario = ? AND password = ?";
+            consulta = cn.prepareStatement(sql);
+            consulta.setString(1, objeto.getUsuario());
+            consulta.setString(2, objeto.getPassword());
+            rs = consulta.executeQuery();
+            
+            if (rs.next()) {
+                respuesta = true;
+            }
+            
+        } catch (SQLException e) {
+            System.out.println("Error al Iniciar Sesion: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "Error al Iniciar Sesion");
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (consulta != null) consulta.close();
+                if (cn != null) cn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return respuesta;
     }
 }
