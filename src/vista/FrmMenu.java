@@ -50,12 +50,12 @@ public java.awt.Font usarMontserrat(int estilo, float tamano) {
         nuevo_producto = new javax.swing.JMenuItem();
         gestionar_producto = new javax.swing.JMenuItem();
         actualizar_stock = new javax.swing.JMenuItem();
-        jMenu3 = new javax.swing.JMenu();
-        nuevo_cliente = new javax.swing.JMenuItem();
-        gestionar_cliente = new javax.swing.JMenuItem();
         jMenu4 = new javax.swing.JMenu();
         nueva_categoria = new javax.swing.JMenuItem();
         gestionar_categoria = new javax.swing.JMenuItem();
+        jMenu3 = new javax.swing.JMenu();
+        nuevo_cliente = new javax.swing.JMenuItem();
+        gestionar_cliente = new javax.swing.JMenuItem();
         jMenu5 = new javax.swing.JMenu();
         nueva_venta = new javax.swing.JMenuItem();
         gestionar_venta = new javax.swing.JMenuItem();
@@ -98,6 +98,7 @@ public java.awt.Font usarMontserrat(int estilo, float tamano) {
         nuevo_producto.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/nuevo-producto.png"))); // NOI18N
         nuevo_producto.setText("Nuevo Producto");
         nuevo_producto.setPreferredSize(new java.awt.Dimension(180, 30));
+        nuevo_producto.addActionListener(this::nuevo_productoActionPerformed);
         jMenu2.add(nuevo_producto);
 
         gestionar_producto.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/producto.png"))); // NOI18N
@@ -112,23 +113,6 @@ public java.awt.Font usarMontserrat(int estilo, float tamano) {
         jMenu2.add(actualizar_stock);
 
         jMenuBar1.add(jMenu2);
-
-        jMenu3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/cliente.png"))); // NOI18N
-        jMenu3.setText("Cliente");
-        jMenu3.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
-        jMenu3.setPreferredSize(new java.awt.Dimension(171, 50));
-
-        nuevo_cliente.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/nuevo-cliente.png"))); // NOI18N
-        nuevo_cliente.setText("Nuevo Cliente");
-        nuevo_cliente.setPreferredSize(new java.awt.Dimension(180, 30));
-        jMenu3.add(nuevo_cliente);
-
-        gestionar_cliente.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/cliente.png"))); // NOI18N
-        gestionar_cliente.setText("Gestionar Cliente");
-        gestionar_cliente.setPreferredSize(new java.awt.Dimension(180, 30));
-        jMenu3.add(gestionar_cliente);
-
-        jMenuBar1.add(jMenu3);
 
         jMenu4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/categorias.png"))); // NOI18N
         jMenu4.setText("Categorias");
@@ -147,6 +131,23 @@ public java.awt.Font usarMontserrat(int estilo, float tamano) {
         gestionar_categoria.setPreferredSize(new java.awt.Dimension(180, 30));
         gestionar_categoria.addActionListener(this::gestionar_categoriaActionPerformed);
         jMenu4.add(gestionar_categoria);
+
+        jMenu3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/cliente.png"))); // NOI18N
+        jMenu3.setText("Cliente");
+        jMenu3.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        jMenu3.setPreferredSize(new java.awt.Dimension(171, 50));
+
+        nuevo_cliente.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/nuevo-cliente.png"))); // NOI18N
+        nuevo_cliente.setText("Nuevo Cliente");
+        nuevo_cliente.setPreferredSize(new java.awt.Dimension(180, 30));
+        jMenu3.add(nuevo_cliente);
+
+        gestionar_cliente.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/cliente.png"))); // NOI18N
+        gestionar_cliente.setText("Gestionar Cliente");
+        gestionar_cliente.setPreferredSize(new java.awt.Dimension(180, 30));
+        jMenu3.add(gestionar_cliente);
+
+        jMenu4.add(jMenu3);
 
         jMenuBar1.add(jMenu4);
 
@@ -273,6 +274,13 @@ public java.awt.Font usarMontserrat(int estilo, float tamano) {
         interGestionarCategorias.setVisible(true);
         
     }//GEN-LAST:event_gestionar_categoriaActionPerformed
+
+    private void nuevo_productoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nuevo_productoActionPerformed
+        // TODO add your handling code here:
+        InterProducto interProducto = new InterProducto();
+        jDesktopPane_menu.add(interProducto);
+        interProducto.setVisible(true);
+    }//GEN-LAST:event_nuevo_productoActionPerformed
 
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(() -> new FrmMenu().setVisible(true));
