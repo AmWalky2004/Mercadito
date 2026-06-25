@@ -47,6 +47,63 @@ public class Ctrl_Usuario {
         }
         return respuesta;
     }
+    
+    //actualizar
+    public boolean actualizar(Usuario objeto, int idUsuario) {
+        boolean respuesta = false;
+        Connection cn = null;
+        PreparedStatement consulta = null;
+        
+        try {
+            cn = Conexion.conectar();
+            // Consulta SQL parametrizada para actualizar los datos correspondientes usando el idUsuario
+            String sql = "update tb_usuario set nombre=?, apellido=?, usuario=?, password=?, telefono=? where idUsuario = ?";
+            consulta = cn.prepareStatement(sql);
+            
+            consulta.setString(1, objeto.getNombre());
+        consulta.setString(2, objeto.getApellido());
+        consulta.setString(3, objeto.getUsuario());
+        consulta.setString(4, objeto.getPassword());
+        consulta.setString(5, objeto.getTelefono());
+        consulta.setInt(6, idUsuario); 
+            
+            if (consulta.executeUpdate() > 0) {
+                respuesta = true;
+            }
+            
+        } catch (SQLException e) {
+            System.out.println("ERROR AL ACTUALIZAR USUARIO: " + e.getMessage());
+        } 
+        return respuesta;
+    }
+    //eliminar
+    public boolean eliminar(int idUsuario) {
+        boolean respuesta = false;
+        Connection cn = null;
+        PreparedStatement consulta = null;
+        
+        try {
+            cn = Conexion.conectar();
+            String sql = "DELETE FROM tb_usuario WHERE idUsuario = ?";
+            consulta = cn.prepareStatement(sql);
+            consulta.setInt(1, idUsuario);
+            
+            if (consulta.executeUpdate() > 0) {
+                respuesta = true;
+            }
+            
+        } catch (SQLException e) {
+            System.out.println("ERROR AL ELIMINAR USUARIO: " + e.getMessage());
+        } finally {
+            try {
+                if (consulta != null) consulta.close();
+                if (cn != null) cn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return respuesta;
+    }
 
     public boolean existeUsuario(String usuario) {
         boolean respuesta = false;
