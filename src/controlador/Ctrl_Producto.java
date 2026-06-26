@@ -194,4 +194,124 @@ public class Ctrl_Producto {
         }
         return producto;
     }
+    // ============ ACTUALIZAR PRODUCTO ============
+
+    public boolean actualizar(Producto objeto) {
+        boolean respuesta = false;
+        Connection cn = null;
+        PreparedStatement consulta = null;
+
+        try {
+            cn = Conexion.conectar();
+
+            String sql = "UPDATE tb_producto SET nombre = ?, cantidad = ?, precio = ?, descripcion = ?, porcentajeIVA = ?, idCategoria = ?, estado = ? WHERE idProducto = ?";
+            consulta = cn.prepareStatement(sql);
+
+            consulta.setString(1, objeto.getNombre());
+            consulta.setInt(2, objeto.getCantidad());
+            consulta.setDouble(3, objeto.getPrecio());
+            consulta.setString(4, objeto.getDescripcion());
+            consulta.setInt(5, objeto.getPorcentajeIVA());
+            consulta.setInt(6, objeto.getIdCategoria());
+            consulta.setInt(7, objeto.getEstado());
+            consulta.setInt(8, objeto.getIdProducto());
+
+            System.out.println("📝 Actualizando producto: " + objeto.getNombre());
+
+            if (consulta.executeUpdate() > 0) {
+                respuesta = true;
+                System.out.println("✅ Producto actualizado");
+            }
+
+        } catch (SQLException e) {
+            System.out.println("❌ Error al actualizar: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "Error al actualizar: " + e.getMessage());
+        } finally {
+            try {
+                if (consulta != null) {
+                    consulta.close();
+                }
+                if (cn != null) {
+                    cn.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return respuesta;
+    }
+// ============ DESACTIVAR PRODUCTO ============
+
+    public boolean desactivar(int idProducto) {
+        boolean respuesta = false;
+        Connection cn = null;
+        PreparedStatement consulta = null;
+
+        try {
+            cn = Conexion.conectar();
+
+            String sql = "UPDATE tb_producto SET estado = 0 WHERE idProducto = ?";
+            consulta = cn.prepareStatement(sql);
+            consulta.setInt(1, idProducto);
+
+            if (consulta.executeUpdate() > 0) {
+                respuesta = true;
+                System.out.println("Producto desactivado: ID " + idProducto);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error al desactivar: " + e.getMessage());
+        } finally {
+            try {
+                if (consulta != null) {
+                    consulta.close();
+                }
+                if (cn != null) {
+                    cn.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return respuesta;
+    }
+    // ============ ELIMINAR FÍSICAMENTE PRODUCTO ============
+
+    public boolean eliminarFisicamente(int idProducto) {
+        boolean respuesta = false;
+        Connection cn = null;
+        PreparedStatement consulta = null;
+
+        try {
+            cn = Conexion.conectar();
+
+            String sql = "DELETE FROM tb_producto WHERE idProducto = ?";
+            consulta = cn.prepareStatement(sql);
+            consulta.setInt(1, idProducto);
+
+            System.out.println("Eliminando el producto ID: " + idProducto);
+
+            if (consulta.executeUpdate() > 0) {
+                respuesta = true;
+                System.out.println("Producto Eliminado");
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error al eliminar: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "Error al eliminar: " + e.getMessage());
+        } finally {
+            try {
+                if (consulta != null) {
+                    consulta.close();
+                }
+                if (cn != null) {
+                    cn.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return respuesta;
+    }
 }

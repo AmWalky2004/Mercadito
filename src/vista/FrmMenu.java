@@ -104,6 +104,7 @@ public class FrmMenu extends javax.swing.JFrame {
         gestionar_producto.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/producto.png"))); // NOI18N
         gestionar_producto.setText("Gestionar Producto");
         gestionar_producto.setPreferredSize(new java.awt.Dimension(180, 30));
+        gestionar_producto.addActionListener(this::gestionar_productoActionPerformed);
         jMenu2.add(gestionar_producto);
 
         actualizar_stock.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/nuevo.png"))); // NOI18N
@@ -279,10 +280,16 @@ public class FrmMenu extends javax.swing.JFrame {
 
     private void nuevo_productoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nuevo_productoActionPerformed
         // TODO add your handling code here:
-       InterProducto interProducto = new InterProducto();
-       jDesktopPane_menu.add(interProducto);
-       interProducto.setVisible(true);
+        InterProducto interProducto = new InterProducto();
+        jDesktopPane_menu.add(interProducto);
+        interProducto.setVisible(true);
     }//GEN-LAST:event_nuevo_productoActionPerformed
+
+    private void gestionar_productoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gestionar_productoActionPerformed
+        InterGestionarProductos interGestionarProductos = new InterGestionarProductos();
+        jDesktopPane_menu.add(interGestionarProductos);
+        interGestionarProductos.setVisible(true);
+    }//GEN-LAST:event_gestionar_productoActionPerformed
 
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(() -> new FrmMenu().setVisible(true));
