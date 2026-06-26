@@ -1,5 +1,3 @@
-
-
   package vista;
   
   import java.awt.Dimension;
@@ -10,7 +8,7 @@ import javax.swing.JInternalFrame;
  *
  * @author PC
  */
-public class InterProducto extends javax.swing.JFrame {
+public class InterProducto extends javax.swing.JInternalFrame {
       
    int obtenerIdCategoriaCombo = 0;
    
@@ -46,10 +44,9 @@ public class InterProducto extends javax.swing.JFrame {
         jButton_Guardar = new javax.swing.JButton();
         jLabel_wallpaper = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setFocusable(false);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setForeground(java.awt.Color.white);
-        setIconImage(getIconImage());
+        setFocusable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
@@ -100,18 +97,18 @@ public class InterProducto extends javax.swing.JFrame {
         getContentPane().add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 200, 90, -1));
 
         txt_nombre.addActionListener(this::txt_nombreActionPerformed);
-        getContentPane().add(txt_nombre, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 50, 170, 20));
+        getContentPane().add(txt_nombre, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 50, 170, -1));
 
         txt_cantidad.addActionListener(this::txt_cantidadActionPerformed);
-        getContentPane().add(txt_cantidad, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 80, 170, 20));
+        getContentPane().add(txt_cantidad, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 80, 170, -1));
 
         txt_precio.addActionListener(this::txt_precioActionPerformed);
-        getContentPane().add(txt_precio, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 110, 170, 20));
+        getContentPane().add(txt_precio, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 110, 170, -1));
 
         txt_descripcion.addActionListener(this::txt_descripcionActionPerformed);
-        getContentPane().add(txt_descripcion, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 140, 170, 20));
+        getContentPane().add(txt_descripcion, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 140, 170, -1));
 
-        jComboBox_iva.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccione iva:", "No grava iva:", "12%", "14%", " " }));
+        jComboBox_iva.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccione iva:", "No grava iva:", "12%", "14%" }));
         getContentPane().add(jComboBox_iva, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 170, 170, 30));
 
         jComboBox_categoria.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccione categoria:", "Item 2", "Item 3", "Item 4" }));

@@ -5,7 +5,7 @@ import java.awt.Dimension;
 import javax.swing.JDesktopPane;
 
 public class FrmMenu extends javax.swing.JFrame {
-    
+
     public static JDesktopPane jDesktopPane_menu;
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(FrmMenu.class.getName());
@@ -18,26 +18,26 @@ public class FrmMenu extends javax.swing.JFrame {
         this.setTitle("Sistema de Ventas - MENU PRINCIPAL");
         this.setLayout(null);
         jDesktopPane_menu = new JDesktopPane();
-        
+
         int ancho = java.awt.Toolkit.getDefaultToolkit().getScreenSize().width;
         int alto = java.awt.Toolkit.getDefaultToolkit().getScreenSize().height;
-        
+
         this.jDesktopPane_menu.setBounds(0, 0, ancho, (alto - 110));
         this.add(jDesktopPane_menu);
-        
-        
-        
+
     }
-public java.awt.Font usarMontserrat(int estilo, float tamano) {
-    try {
-        java.io.InputStream is = getClass().getResourceAsStream("/fuentetxt/Montserrat-Medium.ttf");
-        java.awt.Font base = java.awt.Font.createFont(java.awt.Font.TRUETYPE_FONT, is);
-        return base.deriveFont(estilo, tamano);
-    } catch (Exception e) {
-        // Si falla en otra laptop, te devuelve la fuente por defecto del sistema para que no explote
-        return new java.awt.Font("Arial", estilo, (int)tamano);
+
+    public java.awt.Font usarMontserrat(int estilo, float tamano) {
+        try {
+            java.io.InputStream is = getClass().getResourceAsStream("/fuentetxt/Montserrat-Medium.ttf");
+            java.awt.Font base = java.awt.Font.createFont(java.awt.Font.TRUETYPE_FONT, is);
+            return base.deriveFont(estilo, tamano);
+        } catch (Exception e) {
+            // Si falla en otra laptop, te devuelve la fuente por defecto del sistema para que no explote
+            return new java.awt.Font("Arial", estilo, (int) tamano);
+        }
     }
-}
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -132,6 +132,8 @@ public java.awt.Font usarMontserrat(int estilo, float tamano) {
         gestionar_categoria.addActionListener(this::gestionar_categoriaActionPerformed);
         jMenu4.add(gestionar_categoria);
 
+        jMenuBar1.add(jMenu4);
+
         jMenu3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/cliente.png"))); // NOI18N
         jMenu3.setText("Cliente");
         jMenu3.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
@@ -147,9 +149,7 @@ public java.awt.Font usarMontserrat(int estilo, float tamano) {
         gestionar_cliente.setPreferredSize(new java.awt.Dimension(180, 30));
         jMenu3.add(gestionar_cliente);
 
-        jMenu4.add(jMenu3);
-
-        jMenuBar1.add(jMenu4);
+        jMenuBar1.add(jMenu3);
 
         jMenu5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/carrito.png"))); // NOI18N
         jMenu5.setText("Facturar");
@@ -238,7 +238,9 @@ public java.awt.Font usarMontserrat(int estilo, float tamano) {
     }//GEN-LAST:event_nuevo_usuarioActionPerformed
 
     private void gestionar_usuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gestionar_usuarioActionPerformed
-        // TODO add your handling code here:
+        InterGestionarUsuario interGestionarUsuario = new InterGestionarUsuario();
+        jDesktopPane_menu.add(interGestionarUsuario);
+        interGestionarUsuario.setVisible(true);
     }//GEN-LAST:event_gestionar_usuarioActionPerformed
 
     private void actualizar_stockActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actualizar_stockActionPerformed
@@ -272,14 +274,14 @@ public java.awt.Font usarMontserrat(int estilo, float tamano) {
         InterGestionarCategorias interGestionarCategorias = new InterGestionarCategorias();
         jDesktopPane_menu.add(interGestionarCategorias);
         interGestionarCategorias.setVisible(true);
-        
+
     }//GEN-LAST:event_gestionar_categoriaActionPerformed
 
     private void nuevo_productoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nuevo_productoActionPerformed
         // TODO add your handling code here:
-        InterProducto interProducto = new InterProducto();
-        jDesktopPane_menu.add(interProducto);
-        interProducto.setVisible(true);
+       InterProducto interProducto = new InterProducto();
+       jDesktopPane_menu.add(interProducto);
+       interProducto.setVisible(true);
     }//GEN-LAST:event_nuevo_productoActionPerformed
 
     public static void main(String args[]) {
