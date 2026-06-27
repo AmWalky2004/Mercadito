@@ -216,15 +216,15 @@ public class Ctrl_Producto {
             consulta.setInt(7, objeto.getEstado());
             consulta.setInt(8, objeto.getIdProducto());
 
-            System.out.println("📝 Actualizando producto: " + objeto.getNombre());
+            System.out.println("Actualizando producto: " + objeto.getNombre());
 
             if (consulta.executeUpdate() > 0) {
                 respuesta = true;
-                System.out.println("✅ Producto actualizado");
+                System.out.println("Producto actualizado");
             }
 
         } catch (SQLException e) {
-            System.out.println("❌ Error al actualizar: " + e.getMessage());
+            System.out.println("Error al actualizar: " + e.getMessage());
             JOptionPane.showMessageDialog(null, "Error al actualizar: " + e.getMessage());
         } finally {
             try {
@@ -276,7 +276,7 @@ public class Ctrl_Producto {
 
         return respuesta;
     }
-    // ============ ELIMINAR FÍSICAMENTE PRODUCTO ============
+    // ============ ELIMINAR PRODUCTO ============
 
     public boolean eliminarFisicamente(int idProducto) {
         boolean respuesta = false;
@@ -300,6 +300,45 @@ public class Ctrl_Producto {
         } catch (SQLException e) {
             System.out.println("Error al eliminar: " + e.getMessage());
             JOptionPane.showMessageDialog(null, "Error al eliminar: " + e.getMessage());
+        } finally {
+            try {
+                if (consulta != null) {
+                    consulta.close();
+                }
+                if (cn != null) {
+                    cn.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return respuesta;
+    }
+
+    // ============ ACTUALIZAR STOCK ============
+    public boolean actualizarStock(int idProducto, int nuevoStock) {
+        boolean respuesta = false;
+        Connection cn = null;
+        PreparedStatement consulta = null;
+
+        try {
+            cn = Conexion.conectar();
+
+            String sql = "UPDATE tb_producto SET cantidad = ? WHERE idProducto = ?";
+            consulta = cn.prepareStatement(sql);
+            consulta.setInt(1, nuevoStock);
+            consulta.setInt(2, idProducto);
+
+            System.out.println("Actualizando stock - ID: " + idProducto + " → Nuevo stock: " + nuevoStock);
+
+            if (consulta.executeUpdate() > 0) {
+                respuesta = true;
+                System.out.println("Stock actualizado");
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error al actualizar stock: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "Error al actualizar stock: " + e.getMessage());
         } finally {
             try {
                 if (consulta != null) {

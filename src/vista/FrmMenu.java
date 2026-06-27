@@ -245,7 +245,9 @@ public class FrmMenu extends javax.swing.JFrame {
     }//GEN-LAST:event_gestionar_usuarioActionPerformed
 
     private void actualizar_stockActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actualizar_stockActionPerformed
-        // TODO add your handling code here:
+        InterActualizarStock interActualizarStock = new InterActualizarStock();
+        jDesktopPane_menu.add(interActualizarStock);
+        interActualizarStock.setVisible(true);
     }//GEN-LAST:event_actualizar_stockActionPerformed
 
     private void gestionar_ventaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gestionar_ventaActionPerformed

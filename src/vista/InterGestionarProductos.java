@@ -68,7 +68,7 @@ public class InterGestionarProductos extends javax.swing.JInternalFrame {
         jTable_total.getColumnModel().getColumn(7).setPreferredWidth(60);
     }
 
-    // ============ CARGAR CATEGORÍAS EN EL COMBO ============
+    // ============ CARGAR CATEGORÍAS ============
     private void cargarCategorias() {
         jComboBox3_categorias.removeAllItems();
         List<Categoria> lista = controlCategoria.listarCategorias();
@@ -166,7 +166,7 @@ public class InterGestionarProductos extends javax.swing.JInternalFrame {
                 String estado = prod.getEstado() == 1 ? "Activo" : "Inactivo";
                 String iva = prod.getPorcentajeIVA() + "%";
                 String categoria = obtenerNombreCategoriaPorId(prod.getIdCategoria());
-
+                
                 Object[] fila = {
                     prod.getIdProducto(),
                     prod.getNombre(),
