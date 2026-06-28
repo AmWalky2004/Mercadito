@@ -46,9 +46,6 @@ public class InterGestionarUsuario extends javax.swing.JInternalFrame {
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable_usuarios = new javax.swing.JTable();
-        jPanel2 = new javax.swing.JPanel();
-        jButton_Actualizar = new javax.swing.JButton();
-        jButton_Eliminar = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jLabel_apellido = new javax.swing.JLabel();
         txt_contraseña = new javax.swing.JTextField();
@@ -60,6 +57,8 @@ public class InterGestionarUsuario extends javax.swing.JInternalFrame {
         txt_telefono = new javax.swing.JTextField();
         txt_usuario = new javax.swing.JTextField();
         txt_nombre = new javax.swing.JTextField();
+        jButton_Actualizar = new javax.swing.JButton();
+        jButton_Eliminar = new javax.swing.JButton();
         jlabel_wallpaper = new javax.swing.JLabel();
 
         setClosable(true);
@@ -91,29 +90,9 @@ public class InterGestionarUsuario extends javax.swing.JInternalFrame {
         ));
         jScrollPane1.setViewportView(jTable_usuarios);
 
-        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 730, 270));
+        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 870, 270));
 
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 50, 730, 270));
-
-        jPanel2.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jButton_Actualizar.setBackground(new java.awt.Color(51, 204, 0));
-        jButton_Actualizar.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jButton_Actualizar.setForeground(new java.awt.Color(0, 0, 0));
-        jButton_Actualizar.setText("Actualizar");
-        jButton_Actualizar.addActionListener(this::jButton_ActualizarActionPerformed);
-        jPanel2.add(jButton_Actualizar, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 10, -1, -1));
-
-        jButton_Eliminar.setBackground(new java.awt.Color(255, 51, 51));
-        jButton_Eliminar.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jButton_Eliminar.setForeground(new java.awt.Color(0, 0, 0));
-        jButton_Eliminar.setText("Eliminar");
-        jButton_Eliminar.addActionListener(this::jButton_EliminarActionPerformed);
-        jPanel2.add(jButton_Eliminar, new org.netbeans.lib.awtextra.AbsoluteConstraints(28, 40, 90, -1));
-
-        getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(750, 50, 130, 270));
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 50, 870, 270));
 
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
         jPanel3.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -173,6 +152,20 @@ public class InterGestionarUsuario extends javax.swing.JInternalFrame {
         txt_nombre.setForeground(new java.awt.Color(0, 0, 0));
         txt_nombre.addActionListener(this::txt_nombreActionPerformed);
         jPanel3.add(txt_nombre, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 10, 170, -1));
+
+        jButton_Actualizar.setBackground(new java.awt.Color(51, 204, 0));
+        jButton_Actualizar.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jButton_Actualizar.setForeground(new java.awt.Color(0, 0, 0));
+        jButton_Actualizar.setText("Actualizar");
+        jButton_Actualizar.addActionListener(this::jButton_ActualizarActionPerformed);
+        jPanel3.add(jButton_Actualizar, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 50, -1, -1));
+
+        jButton_Eliminar.setBackground(new java.awt.Color(255, 51, 51));
+        jButton_Eliminar.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jButton_Eliminar.setForeground(new java.awt.Color(0, 0, 0));
+        jButton_Eliminar.setText("Eliminar");
+        jButton_Eliminar.addActionListener(this::jButton_EliminarActionPerformed);
+        jPanel3.add(jButton_Eliminar, new org.netbeans.lib.awtextra.AbsoluteConstraints(760, 50, 90, -1));
 
         getContentPane().add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 330, 870, 100));
         getContentPane().add(jlabel_wallpaper, new org.netbeans.lib.awtextra.AbsoluteConstraints(-3, -4, 890, 470));
@@ -332,7 +325,6 @@ public class InterGestionarUsuario extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel_telefono;
     private javax.swing.JLabel jLabel_usuario;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     public static javax.swing.JScrollPane jScrollPane1;
     public static javax.swing.JTable jTable_usuarios;

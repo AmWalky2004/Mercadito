@@ -2,6 +2,9 @@ package vista;
 
 import com.sun.tools.javac.Main;
 import java.awt.Dimension;
+import java.awt.Image;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JDesktopPane;
 
 public class FrmMenu extends javax.swing.JFrame {
@@ -24,6 +27,7 @@ public class FrmMenu extends javax.swing.JFrame {
 
         this.jDesktopPane_menu.setBounds(0, 0, ancho, (alto - 110));
         this.add(jDesktopPane_menu);
+        this.repaint();
 
     }
 
@@ -161,6 +165,7 @@ public class FrmMenu extends javax.swing.JFrame {
         nueva_venta.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/anadir.png"))); // NOI18N
         nueva_venta.setText("Nueva Venta");
         nueva_venta.setPreferredSize(new java.awt.Dimension(180, 30));
+        nueva_venta.addActionListener(this::nueva_ventaActionPerformed);
         jMenu5.add(nueva_venta);
 
         gestionar_venta.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/configuraciones.png"))); // NOI18N
@@ -251,7 +256,10 @@ public class FrmMenu extends javax.swing.JFrame {
     }//GEN-LAST:event_actualizar_stockActionPerformed
 
     private void gestionar_ventaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gestionar_ventaActionPerformed
-        // TODO add your handling code here:
+        Intergestionar_venta interGestionarVenta = new Intergestionar_venta();
+        jDesktopPane_menu.add(interGestionarVenta);
+        interGestionarVenta.setVisible(true);
+        interGestionarVenta.toFront();
     }//GEN-LAST:event_gestionar_ventaActionPerformed
 
     private void reportes_categoriasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reportes_categoriasActionPerformed
@@ -292,6 +300,13 @@ public class FrmMenu extends javax.swing.JFrame {
         jDesktopPane_menu.add(interGestionarProductos);
         interGestionarProductos.setVisible(true);
     }//GEN-LAST:event_gestionar_productoActionPerformed
+
+    private void nueva_ventaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nueva_ventaActionPerformed
+        Internueva_venta interNuevaVenta = new Internueva_venta();
+        jDesktopPane_menu.add(interNuevaVenta);
+        interNuevaVenta.setVisible(true);
+        interNuevaVenta.toFront();
+    }//GEN-LAST:event_nueva_ventaActionPerformed
 
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(() -> new FrmMenu().setVisible(true));

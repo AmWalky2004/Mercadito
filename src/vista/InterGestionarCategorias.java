@@ -35,12 +35,11 @@ public class InterGestionarCategorias extends javax.swing.JInternalFrame {
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable_Categorias = new javax.swing.JTable();
-        jPanel2 = new javax.swing.JPanel();
-        jButton_Actualizar = new javax.swing.JButton();
-        jButton_Eliminar = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         txt_descripcion = new javax.swing.JTextField();
+        jButton_Actualizar = new javax.swing.JButton();
+        jButton_Eliminar = new javax.swing.JButton();
         jLabel_wallpaper = new javax.swing.JLabel();
 
         setClosable(true);
@@ -74,26 +73,6 @@ public class InterGestionarCategorias extends javax.swing.JInternalFrame {
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 60, 350, 250));
 
-        jPanel2.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jButton_Actualizar.setBackground(new java.awt.Color(51, 204, 0));
-        jButton_Actualizar.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jButton_Actualizar.setForeground(new java.awt.Color(0, 0, 0));
-        jButton_Actualizar.setText("Actualizar");
-        jButton_Actualizar.addActionListener(this::jButton_ActualizarActionPerformed);
-        jPanel2.add(jButton_Actualizar, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 10, -1, -1));
-
-        jButton_Eliminar.setBackground(new java.awt.Color(255, 51, 51));
-        jButton_Eliminar.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jButton_Eliminar.setForeground(new java.awt.Color(0, 0, 0));
-        jButton_Eliminar.setText("Eliminar");
-        jButton_Eliminar.addActionListener(this::jButton_EliminarActionPerformed);
-        jPanel2.add(jButton_Eliminar, new org.netbeans.lib.awtextra.AbsoluteConstraints(28, 40, 90, -1));
-
-        getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 60, 130, 80));
-
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
         jPanel3.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -101,7 +80,7 @@ public class InterGestionarCategorias extends javax.swing.JInternalFrame {
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(0, 0, 0));
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        jLabel2.setText("Descripcion");
+        jLabel2.setText("Categoria:");
         jPanel3.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, -1));
 
         txt_descripcion.setBackground(new java.awt.Color(204, 204, 204));
@@ -109,7 +88,21 @@ public class InterGestionarCategorias extends javax.swing.JInternalFrame {
         txt_descripcion.addActionListener(this::txt_descripcionActionPerformed);
         jPanel3.add(txt_descripcion, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 40, 170, -1));
 
-        getContentPane().add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 160, 190, 80));
+        jButton_Actualizar.setBackground(new java.awt.Color(51, 204, 0));
+        jButton_Actualizar.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jButton_Actualizar.setForeground(new java.awt.Color(0, 0, 0));
+        jButton_Actualizar.setText("Actualizar");
+        jButton_Actualizar.addActionListener(this::jButton_ActualizarActionPerformed);
+        jPanel3.add(jButton_Actualizar, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 90, -1, -1));
+
+        jButton_Eliminar.setBackground(new java.awt.Color(255, 51, 51));
+        jButton_Eliminar.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jButton_Eliminar.setForeground(new java.awt.Color(0, 0, 0));
+        jButton_Eliminar.setText("Eliminar");
+        jButton_Eliminar.addActionListener(this::jButton_EliminarActionPerformed);
+        jPanel3.add(jButton_Eliminar, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 90, 90, -1));
+
+        getContentPane().add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 60, 190, 140));
 
         jLabel_wallpaper.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/fondo3.jpg"))); // NOI18N
         getContentPane().add(jLabel_wallpaper, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 590, 370));
@@ -168,7 +161,6 @@ public class InterGestionarCategorias extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel_wallpaper;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     public static javax.swing.JScrollPane jScrollPane1;
     public static javax.swing.JTable jTable_Categorias;
@@ -189,9 +181,9 @@ public class InterGestionarCategorias extends javax.swing.JInternalFrame {
             InterGestionarCategorias.jTable_Categorias = new JTable(model);
             InterGestionarCategorias.jScrollPane1.setViewportView(InterGestionarCategorias.jTable_Categorias);
 
-            model.addColumn("idCategoria");
-            model.addColumn("descripcion");
-            model.addColumn("estado");
+            model.addColumn("ID");
+            model.addColumn("Categoria");
+            model.addColumn("Estado");
 
             while (rs.next()) {
                 Object file[] = new Object[3];
