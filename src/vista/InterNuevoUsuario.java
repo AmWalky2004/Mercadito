@@ -33,12 +33,12 @@ public class InterNuevoUsuario extends javax.swing.JInternalFrame {
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         verclave = new javax.swing.JCheckBox();
+        txt_nombre = new javax.swing.JTextField();
         txt_apellido = new javax.swing.JTextField();
         txt_usuario = new javax.swing.JTextField();
-        txt_nombre = new javax.swing.JTextField();
-        txt_telefono = new javax.swing.JTextField();
         txt_contraseña = new javax.swing.JPasswordField();
         txt_contraseña_visible = new javax.swing.JTextField();
+        txt_telefono = new javax.swing.JTextField();
         combobox_rol = new javax.swing.JComboBox<>();
         BOTONGUARDAR = new javax.swing.JButton();
         wallpaper = new javax.swing.JLabel();
@@ -69,6 +69,7 @@ public class InterNuevoUsuario extends javax.swing.JInternalFrame {
         jLabel7.setText("ESTADO/ROL");
         getContentPane().add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 200, -1, -1));
 
+        verclave.setFocusable(false);
         verclave.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 verclaveMouseClicked(evt);
@@ -77,17 +78,19 @@ public class InterNuevoUsuario extends javax.swing.JInternalFrame {
         verclave.addActionListener(this::verclaveActionPerformed);
         getContentPane().add(verclave, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 145, -1, -1));
 
+        txt_nombre.addActionListener(this::txt_nombreActionPerformed);
+        getContentPane().add(txt_nombre, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 50, 150, -1));
+
         txt_apellido.addActionListener(this::txt_apellidoActionPerformed);
         getContentPane().add(txt_apellido, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 80, 150, -1));
         getContentPane().add(txt_usuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 110, 150, -1));
 
-        txt_nombre.addActionListener(this::txt_nombreActionPerformed);
-        getContentPane().add(txt_nombre, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 50, 150, -1));
-        getContentPane().add(txt_telefono, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 170, 150, -1));
-
         txt_contraseña.addActionListener(this::txt_contraseñaActionPerformed);
         getContentPane().add(txt_contraseña, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 140, 150, -1));
+
+        txt_contraseña_visible.setFocusable(false);
         getContentPane().add(txt_contraseña_visible, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 140, 150, -1));
+        getContentPane().add(txt_telefono, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 170, 150, -1));
 
         combobox_rol.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccionar", "Administrador", "Gerente", "Cajero" }));
         combobox_rol.addActionListener(this::combobox_rolActionPerformed);

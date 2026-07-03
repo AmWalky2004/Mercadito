@@ -6,10 +6,12 @@ import java.awt.event.ActionListener;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
+import java.util.List;
+
 
 /**
- * Formulario Interno para la gestión, búsqueda y anulación de ventas.
- * Diseñado para integrarse en un JDesktopPane.
+ * Formulario Interno para la gestión, búsqueda y anulación de ventas. Diseñado
+ * para integrarse en un JDesktopPane.
  */
 public class Intergestionar_venta extends JInternalFrame {
 
@@ -17,20 +19,26 @@ public class Intergestionar_venta extends JInternalFrame {
     private JTextField txtBuscarFactura, txtBuscarCliente;
     private JComboBox<String> cbEstado;
     private JButton btnBuscar, btnLimpiarFiltros;
-
     // Tabla de visualización del historial de ventas
     private JTable tablaVentas;
     private DefaultTableModel modeloVentas;
-    
+
+    //Controladores
+    private controlador.Ctrl_Venta controlVenta;
+
     // Botones de control y acción
     private JButton btnVerDetalle, btnAnularVenta;
 
     public Intergestionar_venta() {
         // Título, Redimensionable, Cerrable, Maximizable, Minimizable
         super("Gestionar Ventas - Historial", true, true, true, true);
+
+        // Inicializar controlador
+        controlVenta = new controlador.Ctrl_Venta();
+
         initComponents();
         setSize(950, 550); // Ajuste de dimensiones perfecto para el panel azul
-        cargarDatosSimulados(); // Llena la tabla con registros de prueba
+        cargarVentasReales();
     }
 
     private void initComponents() {
@@ -44,8 +52,8 @@ public class Intergestionar_venta extends JInternalFrame {
         // ==========================================
         JPanel panelFiltros = new JPanel(new GridBagLayout());
         panelFiltros.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createEtchedBorder(), "Criterios de Búsqueda / Filtros", 
-                TitledBorder.LEFT, TitledBorder.TOP, 
+                BorderFactory.createEtchedBorder(), "Criterios de Búsqueda / Filtros",
+                TitledBorder.LEFT, TitledBorder.TOP,
                 new Font("Segoe UI", Font.BOLD, 13), new Color(0, 80, 136)));
         panelFiltros.setBackground(Color.WHITE);
 
@@ -54,7 +62,8 @@ public class Intergestionar_venta extends JInternalFrame {
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         // Filtro por número de factura
-        gbc.gridx = 0; gbc.gridy = 0;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
         panelFiltros.add(new JLabel("Nº Factura:"), gbc);
         txtBuscarFactura = new JTextField(10);
         gbc.gridx = 1;
@@ -89,7 +98,8 @@ public class Intergestionar_venta extends JInternalFrame {
         panelBotonesBusqueda.add(btnBuscar);
         panelBotonesBusqueda.add(btnLimpiarFiltros);
 
-        gbc.gridx = 0; gbc.gridy = 1;
+        gbc.gridx = 0;
+        gbc.gridy = 1;
         gbc.gridwidth = 6;
         gbc.weightx = 1.0;
         panelFiltros.add(panelBotonesBusqueda, gbc);
@@ -143,7 +153,6 @@ public class Intergestionar_venta extends JInternalFrame {
         // ==========================================
         // EVENTOS Y EVENT LISTENERS
         // ==========================================
-
         // Listener para aplicar filtros de búsqueda
         btnBuscar.addActionListener(new ActionListener() {
             @Override
@@ -159,7 +168,7 @@ public class Intergestionar_venta extends JInternalFrame {
                 txtBuscarFactura.setText("");
                 txtBuscarCliente.setText("");
                 cbEstado.setSelectedIndex(0);
-                cargarDatosSimulados(); // Recarga todo el set de datos simulado
+                cargarVentasReales(); // Cambiar por datos reales
             }
         });
 
@@ -197,25 +206,50 @@ public class Intergestionar_venta extends JInternalFrame {
                     return;
                 }
 
-                int confirmacion = JOptionPane.showConfirmDialog(null, 
-                        "¿Está seguro de que desea ANULAR la factura Nº " + tablaVentas.getValueAt(fila, 0) + "?\nEsta acción devolverá los artículos al almacén.", 
+                int confirmacion = JOptionPane.showConfirmDialog(null,
+                        "¿Está seguro de que desea ANULAR la factura " + tablaVentas.getValueAt(fila, 0) + "?",
                         "Confirmar Anulación", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-                
+
                 if (confirmacion == JOptionPane.YES_OPTION) {
-                    tablaVentas.setValueAt("Anulada", fila, 5);
-                    JOptionPane.showMessageDialog(null, "La factura ha sido anulada con éxito.");
+                    String idStr = ((String) tablaVentas.getValueAt(fila, 0)).replace("FAC-", "");
+                    int idVenta = Integer.parseInt(idStr);
+
+                    if (controlVenta.anularVenta(idVenta)) {
+                        JOptionPane.showMessageDialog(null, "La factura ha sido anulada con éxito.");
+                        cargarVentasReales(); // Recargar datos
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Error al anular la factura.");
+                    }
                 }
             }
         });
     }
 
     // Inicializa datos de prueba de facturación
-    private void cargarDatosSimulados() {
-        modeloVentas.setRowCount(0); // Limpia la tabla
-        modeloVentas.addRow(new Object[]{"FAC-0001", "15/06/2026", "123456", "Juan Pérez", "15.40", "Activa"});
-        modeloVentas.addRow(new Object[]{"FAC-0002", "16/06/2026", "987654", "María Mendoza", "3.90", "Activa"});
-        modeloVentas.addRow(new Object[]{"FAC-0003", "17/06/2026", "123456", "Juan Pérez", "12.50", "Anulada"});
-        modeloVentas.addRow(new Object[]{"FAC-0004", "17/06/2026", "555111", "Carlos Gómez", "45.00", "Activa"});
+    private void cargarVentasReales() {
+        modeloVentas.setRowCount(0); // Limpiar tabla
+
+        List<modelo.Venta> ventas = controlVenta.listarVentas();
+
+        for (modelo.Venta venta : ventas) {
+            // Obtener datos del cliente
+            controlador.Ctrl_Cliente ctrlCliente = new controlador.Ctrl_Cliente();
+            modelo.Cliente cliente = ctrlCliente.buscarPorId(venta.getIdCliente());
+
+            String nombreCliente = (cliente != null) ? cliente.getNombre() + " " + cliente.getApellido() : "Cliente no encontrado";
+            String cedulaCliente = (cliente != null) ? cliente.getCedula() : "N/A";
+
+            String estado = (venta.getEstado() == 1) ? "Activa" : "Anulada";
+
+            modeloVentas.addRow(new Object[]{
+                "FAC-" + String.format("%04d", venta.getIdCabeceraVenta()),
+                venta.getFechaventa(),
+                cedulaCliente,
+                nombreCliente,
+                String.format("%.2f", venta.getValorpagar()),
+                estado
+            });
+        }
     }
 
     // Lógica para filtrar registros dinámicamente en memoria
@@ -224,39 +258,57 @@ public class Intergestionar_venta extends JInternalFrame {
         String fCliente = txtBuscarCliente.getText().trim();
         String fEstado = (String) cbEstado.getSelectedItem();
 
-        // Si todos los filtros están vacíos, reiniciamos el listado completo
+        // Si todos los filtros están vacíos, mostrar todas las ventas
         if (fFactura.isEmpty() && fCliente.isEmpty() && fEstado.equals("Todos")) {
-            cargarDatosSimulados();
+            cargarVentasReales();
             return;
         }
 
-        cargarDatosSimulados(); // Reiniciamos el set de datos para evaluar de cero
-        for (int i = modeloVentas.getRowCount() - 1; i >= 0; i--) {
-            String factura = ((String) modeloVentas.getValueAt(i, 0)).toLowerCase();
-            String cedula = (String) modeloVentas.getValueAt(i, 2);
-            String estado = (String) modeloVentas.getValueAt(i, 5);
+        // Cargar todas las ventas y luego filtrar
+        List<modelo.Venta> ventas = controlVenta.listarVentas();
+        modeloVentas.setRowCount(0);
 
-            boolean cumpleFactura = fFactura.isEmpty() || factura.contains(fFactura);
-            boolean cumpleCliente = fCliente.isEmpty() || cedula.equals(fCliente);
+        for (modelo.Venta venta : ventas) {
+            controlador.Ctrl_Cliente ctrlCliente = new controlador.Ctrl_Cliente();
+            modelo.Cliente cliente = ctrlCliente.buscarPorId(venta.getIdCliente());
+
+            String nroFactura = "FAC-" + String.format("%04d", venta.getIdCabeceraVenta());
+            String cedulaCliente = (cliente != null) ? cliente.getCedula() : "N/A";
+            String nombreCliente = (cliente != null) ? cliente.getNombre() + " " + cliente.getApellido() : "Cliente no encontrado";
+            String estado = (venta.getEstado() == 1) ? "Activa" : "Anulada";
+
+            boolean cumpleFactura = fFactura.isEmpty() || nroFactura.toLowerCase().contains(fFactura);
+            boolean cumpleCliente = fCliente.isEmpty() || cedulaCliente.equals(fCliente);
             boolean cumpleEstado = fEstado.equals("Todos") || estado.equals(fEstado);
 
-            if (!(cumpleFactura && cumpleCliente && cumpleEstado)) {
-                modeloVentas.removeRow(i);
+            if (cumpleFactura && cumpleCliente && cumpleEstado) {
+                modeloVentas.addRow(new Object[]{
+                    nroFactura,
+                    venta.getFechaventa(),
+                    cedulaCliente,
+                    nombreCliente,
+                    String.format("%.2f", venta.getValorpagar()),
+                    estado
+                });
             }
         }
     }
-
     // Ventana de diálogo modal para mostrar los artículos correspondientes a cada factura
+
     private void mostrarVentanaDetalle(String nroFactura, String cliente, String total) {
+        // Extraer el ID de la factura del formato "FAC-0001"
+        String idStr = nroFactura.replace("FAC-", "");
+        int idVenta = Integer.parseInt(idStr);
+
         JDialog dialogoDetalle = new JDialog((Frame) null, "Detalle de Factura - " + nroFactura, true);
-        dialogoDetalle.setSize(500, 350);
+        dialogoDetalle.setSize(550, 400);
         dialogoDetalle.setLocationRelativeTo(this);
-        
+
         JPanel pContenido = new JPanel(new BorderLayout(10, 10));
         pContenido.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
         pContenido.setBackground(Color.WHITE);
 
-        // Encabezado del diálogo
+        // Encabezado
         JPanel pEncabezado = new JPanel(new GridLayout(2, 1));
         pEncabezado.setOpaque(false);
         JLabel lblCliente = new JLabel("Cliente: " + cliente);
@@ -265,26 +317,32 @@ public class Intergestionar_venta extends JInternalFrame {
         pEncabezado.add(new JLabel("Detalle de Artículos Adquiridos:"));
         pContenido.add(pEncabezado, BorderLayout.NORTH);
 
-        // Estructura de tabla del diálogo de detalles
+        // Tabla de detalles
         String[] colsDetalle = {"Código", "Producto", "Cantidad", "Precio Unitario ($)", "Subtotal ($)"};
         DefaultTableModel modDetalle = new DefaultTableModel(colsDetalle, 0);
         JTable tDetalle = new JTable(modDetalle);
         tDetalle.setRowHeight(20);
-        
-        // Simular artículos en base al código de factura seleccionado
-        if (nroFactura.equals("FAC-0001")) {
-            modDetalle.addRow(new Object[]{"P01", "Harina de Maíz Precocida 1kg", 10, "1.30", "13.00"});
-            modDetalle.addRow(new Object[]{"P02", "Arroz Blanco Extra 1kg", 2, "1.10", "2.20"});
-        } else if (nroFactura.equals("FAC-0002")) {
-            modDetalle.addRow(new Object[]{"P02", "Arroz Blanco Extra 1kg", 3, "1.10", "3.30"});
-        } else {
-            modDetalle.addRow(new Object[]{"P01", "Harina de Maíz Precocida 1kg", 5, "1.30", "6.50"});
-            modDetalle.addRow(new Object[]{"P02", "Arroz Blanco Extra 1kg", 4, "1.10", "4.40"});
+
+        // Cargar detalles reales desde la base de datos
+        List<modelo.DetalleVenta> detalles = controlVenta.listarDetalles(idVenta);
+        controlador.Ctrl_Producto ctrlProducto = new controlador.Ctrl_Producto();
+
+        for (modelo.DetalleVenta detalle : detalles) {
+            modelo.Producto producto = ctrlProducto.buscarProducto(detalle.getIdProducto());
+            String nombreProducto = (producto != null) ? producto.getNombre() : "Producto no encontrado";
+
+            modDetalle.addRow(new Object[]{
+                "P-" + String.format("%03d", detalle.getIdProducto()),
+                nombreProducto,
+                detalle.getCantidad(),
+                String.format("%.2f", detalle.getPreciounitario()),
+                String.format("%.2f", detalle.getSubtotal())
+            });
         }
 
         pContenido.add(new JScrollPane(tDetalle), BorderLayout.CENTER);
 
-        // Pie de ventana con monto total de la factura
+        // Total
         JLabel lblTotalDialogo = new JLabel("Total Facturado: " + total + " $", JLabel.RIGHT);
         lblTotalDialogo.setFont(new Font("Segoe UI", Font.BOLD, 14));
         lblTotalDialogo.setForeground(new Color(180, 0, 0));

@@ -194,6 +194,52 @@ public class Ctrl_Producto {
         }
         return producto;
     }
+    // ============ BUSCAR PRODUCTO POR NOMBRE ============
+
+    public Producto buscarProductoPorNombre(String nombre) {
+        Producto producto = null;
+        Connection cn = null;
+        PreparedStatement consulta = null;
+        ResultSet rs = null;
+
+        try {
+            cn = Conexion.conectar();
+            String sql = "SELECT idProducto, nombre, cantidad, precio, descripcion, porcentajeIVA, idCategoria, estado FROM tb_producto WHERE nombre LIKE ? AND estado = 1";
+            consulta = cn.prepareStatement(sql);
+            consulta.setString(1, "%" + nombre + "%");
+            rs = consulta.executeQuery();
+
+            if (rs.next()) {
+                producto = new Producto();
+                producto.setIdProducto(rs.getInt("idProducto"));
+                producto.setNombre(rs.getString("nombre"));
+                producto.setCantidad(rs.getInt("cantidad"));
+                producto.setPrecio(rs.getDouble("precio"));
+                producto.setDescripcion(rs.getString("descripcion"));
+                producto.setPorcentajeIVA(rs.getInt("porcentajeIVA"));
+                producto.setIdCategoria(rs.getInt("idCategoria"));
+                producto.setEstado(rs.getInt("estado"));
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error al buscar producto: " + e.getMessage());
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (consulta != null) {
+                    consulta.close();
+                }
+                if (cn != null) {
+                    cn.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return producto;
+    }
     // ============ ACTUALIZAR PRODUCTO ============
 
     public boolean actualizar(Producto objeto) {

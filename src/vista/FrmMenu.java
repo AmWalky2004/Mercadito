@@ -147,6 +147,7 @@ public class FrmMenu extends javax.swing.JFrame {
         nuevo_cliente.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/nuevo-cliente.png"))); // NOI18N
         nuevo_cliente.setText("Nuevo Cliente");
         nuevo_cliente.setPreferredSize(new java.awt.Dimension(180, 30));
+        nuevo_cliente.addActionListener(this::nuevo_clienteActionPerformed);
         jMenu3.add(nuevo_cliente);
 
         gestionar_cliente.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/cliente.png"))); // NOI18N
@@ -307,6 +308,12 @@ public class FrmMenu extends javax.swing.JFrame {
         interNuevaVenta.setVisible(true);
         interNuevaVenta.toFront();
     }//GEN-LAST:event_nueva_ventaActionPerformed
+
+    private void nuevo_clienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nuevo_clienteActionPerformed
+        InterCliente intercliente = new InterCliente();
+        jDesktopPane_menu.add(intercliente);
+        intercliente.setVisible(true);
+    }//GEN-LAST:event_nuevo_clienteActionPerformed
 
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(() -> new FrmMenu().setVisible(true));

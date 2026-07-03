@@ -35,26 +35,33 @@ public class Internueva_venta extends JInternalFrame {
     private JButton btnRegistrarVenta, btnCancelarVenta;
 
     // Controladores
-    //private Ctrl_Cliente controlCliente;
+    private Ctrl_Cliente controlCliente;
     private Ctrl_Producto controlProducto;
     private Ctrl_Venta controlVenta;
 
     // Variables de selección
     private int idClienteSeleccionado = 0;
     private int idProductoSeleccionado = 0;
+    private String nombreProductoSeleccionado = "";
+    private String descripcionProductoSeleccionado = "";
+    private int filaEditando = -1;
+    private int stockProductoEditando = 0;
 
     // Constante para el IVA
     private static final double PORCENTAJE_IVA = 0.16;
 
     public Internueva_venta() {
         super("Nueva Venta - Facturación", true, true, true, true);
-        
+
         // Inicializar controladores
-       // controlCliente = new Ctrl_Cliente();
+        controlCliente = new Ctrl_Cliente();
         controlProducto = new Ctrl_Producto();
         controlVenta = new Ctrl_Venta();
-        
+
         initComponents();
+
+        configurarEventos();
+
         setSize(1000, 650);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
@@ -127,7 +134,7 @@ public class Internueva_venta extends JInternalFrame {
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 1;
-        panelProducto.add(new JLabel("Código:"), gbc);
+        panelProducto.add(new JLabel("Producto:"), gbc);
         txtCodigoProd = new JTextField(10);
         gbc.gridx = 1;
         panelProducto.add(txtCodigoProd, gbc);
@@ -185,7 +192,7 @@ public class Internueva_venta extends JInternalFrame {
         // ==========================================
         // 2. PANEL CENTRAL: TABLA
         // ==========================================
-        String[] columnas = {"Código", "Descripción", "Cantidad", "Precio Unitario ($)", "Subtotal ($)"};
+        String[] columnas = {"ID", "Producto", "Descripción", "Cantidad", "Precio Unitario ($)", "Subtotal ($)"};
         modeloTabla = new DefaultTableModel(columnas, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -193,6 +200,23 @@ public class Internueva_venta extends JInternalFrame {
             }
         };
         tablaDetalle = new JTable(modeloTabla);
+        // Al hacer clic en la tabla, cargar el producto para modificar
+        tablaDetalle.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                int fila = tablaDetalle.getSelectedRow();
+                if (fila >= 0) {
+                    cargarProductoParaEditar(fila);
+                }
+            }
+        });
+// Deseleccionar al hacer clic en el panel principal
+        panelPrincipal.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                cancelarEdicionSilenciosamente();
+            }
+        });
         JScrollPane scrollTabla = new JScrollPane(tablaDetalle);
         scrollTabla.setBorder(BorderFactory.createTitledBorder("Detalle de la Venta"));
         panelPrincipal.add(scrollTabla, BorderLayout.CENTER);
@@ -237,69 +261,117 @@ public class Internueva_venta extends JInternalFrame {
         panelPrincipal.add(panelInferior, BorderLayout.SOUTH);
 
         this.setContentPane(panelPrincipal);
-
-        // ==========================================
-        // EVENTOS
-        // ==========================================
-
-        // 1. Buscar Cliente
-        btnBuscarCliente.addActionListener(e -> buscarCliente());
-
-        // 2. Buscar Producto
-        btnBuscarProd.addActionListener(e -> buscarProducto());
-
-        // 3. Agregar Producto a la Factura
-        btnAgregarProd.addActionListener(e -> agregarProducto());
-
-        // 4. Quitar Producto de la Factura
-        btnQuitarProd.addActionListener(e -> quitarProducto());
-
-        // 5. Registrar Venta
-        btnRegistrarVenta.addActionListener(e -> registrarVenta());
-
-        // 6. Presionar Enter en campos de búsqueda
-        txtCedula.addActionListener(e -> buscarCliente());
-        txtCodigoProd.addActionListener(e -> buscarProducto());
     }
 
+    // ==========================================
+    // EVENTOS
+    // ==========================================
+    private void configurarEventos() {
+        // 1. Buscar Cliente
+        btnBuscarCliente.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                buscarCliente();
+            }
+        });
+
+        // 2. Buscar Producto
+        btnBuscarProd.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                buscarProducto();
+            }
+        });
+
+        // 3. Agregar Producto a la Factura
+        btnAgregarProd.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                agregarProducto();
+            }
+        });
+
+        // 4. Quitar Producto de la Factura
+        btnQuitarProd.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                quitarProducto();
+            }
+        });
+
+        // 5. Registrar Venta
+        btnRegistrarVenta.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                registrarVenta();
+            }
+        });
+
+        // 6. Presionar Enter en campos de búsqueda
+        txtCedula.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                buscarCliente();
+            }
+        });
+
+        txtCodigoProd.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                buscarProducto();
+            }
+        });
+    }
     // ==========================================
     // MÉTODOS FUNCIONALES
     // ==========================================
 
+    private void cancelarEdicionSilenciosamente() {
+        if (filaEditando >= 0) {
+            filaEditando = -1;
+            stockProductoEditando = 0;
+            btnAgregarProd.setText("Agregar a Factura");
+            btnAgregarProd.setBackground(new Color(34, 139, 34));
+            tablaDetalle.clearSelection();
+            limpiarCamposProducto();
+        }
+    }
+
     private void buscarCliente() {
         String cedula = txtCedula.getText().trim();
         if (cedula.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Ingrese una cédula/RIF", "Error", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Ingrese una cedula/RIF", "Error", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
         Cliente cliente = controlCliente.buscarPorCedula(cedula);
         if (cliente != null) {
-            txtNombreCliente.setText(cliente.getNombre());
+            txtNombreCliente.setText(cliente.getNombre() + " " + cliente.getApellido());
             txtTelefonoCliente.setText(cliente.getTelefono());
             idClienteSeleccionado = cliente.getIdCliente();
-            JOptionPane.showMessageDialog(this, "✅ Cliente encontrado: " + cliente.getNombre(), "Éxito", JOptionPane.INFORMATION_MESSAGE);
         } else {
-            JOptionPane.showMessageDialog(this, "❌ Cliente no encontrado", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Cliente no encontrado: " + cedula, "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void buscarProducto() {
-        String codigo = txtCodigoProd.getText().trim();
-        if (codigo.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Ingrese un código de producto", "Error", JOptionPane.WARNING_MESSAGE);
+        String nombre = txtCodigoProd.getText().trim();
+        if (nombre.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Ingrese el nombre del producto", "Error", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        Producto producto = controlProducto.buscarPorCodigo(codigo);
+        Producto producto = controlProducto.buscarProductoPorNombre(nombre);
         if (producto != null) {
-            txtNombreProd.setText(producto.getNombre());
-            txtPrecioProd.setText(String.format("%.2f", producto.getPrecio()));
+            txtNombreProd.setText(producto.getDescripcion());
+            txtPrecioProd.setText(String.valueOf(producto.getPrecio()));
+            txtPrecioProd.setText(String.format("%.2f", producto.getPrecio()).replace(",", "."));
             txtStockProd.setText(String.valueOf(producto.getCantidad()));
             idProductoSeleccionado = producto.getIdProducto();
-            JOptionPane.showMessageDialog(this, "✅ Producto encontrado: " + producto.getNombre(), "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            nombreProductoSeleccionado = producto.getNombre();
+            descripcionProductoSeleccionado = producto.getDescripcion();
         } else {
-            JOptionPane.showMessageDialog(this, "❌ Producto no encontrado", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Producto no encontrado: " + nombre, "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -310,40 +382,127 @@ public class Internueva_venta extends JInternalFrame {
         }
 
         try {
-            double precio = Double.parseDouble(txtPrecioProd.getText());
-            int stock = Integer.parseInt(txtStockProd.getText());
+            String precioTexto = txtPrecioProd.getText().trim().replace(",", ".");
+            String stockTexto = txtStockProd.getText().trim();
+
+            double precio = Double.parseDouble(precioTexto);
+            int stock = Integer.parseInt(stockTexto);
             int cantidad = (int) spinCantidad.getValue();
 
-            // Validar stock
             if (cantidad > stock) {
-                JOptionPane.showMessageDialog(this, "⚠️ Stock insuficiente. Disponible: " + stock,
+                JOptionPane.showMessageDialog(this, "Stock insuficiente. Disponible: " + stock,
                         "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            // Validar que no se duplique el producto
-            for (int i = 0; i < modeloTabla.getRowCount(); i++) {
-                if (modeloTabla.getValueAt(i, 0).equals(txtCodigoProd.getText())) {
-                    JOptionPane.showMessageDialog(this, "⚠️ Producto ya agregado. Modifique la cantidad.",
-                            "Error", JOptionPane.WARNING_MESSAGE);
+// Si estamos editando un producto de la tabla
+            if (filaEditando >= 0) {
+                // Verificar que no supere el stock real
+                if (cantidad > stockProductoEditando) {
+                    JOptionPane.showMessageDialog(this,
+                            "Stock insuficiente. Stock disponible: " + stockProductoEditando,
+                            "Error", JOptionPane.ERROR_MESSAGE);
                     return;
+                }
+
+                double subtotal = precio * cantidad;
+                modeloTabla.setValueAt(cantidad, filaEditando, 3);
+                modeloTabla.setValueAt(String.format("%.2f", subtotal).replace(",", "."), filaEditando, 5);
+                btnAgregarProd.setText("Agregar a Factura");
+                btnAgregarProd.setBackground(new Color(34, 139, 34));
+                filaEditando = -1;
+                stockProductoEditando = 0;
+
+                calcularTotales();
+                limpiarCamposProducto();
+                return;
+            }
+
+            //Buscar si el producto ya está en la tabla
+            int filaExistente = -1;
+            String codigoBuscar = nombreProductoSeleccionado.isEmpty() ? txtCodigoProd.getText() : nombreProductoSeleccionado;
+            for (int i = 0; i < modeloTabla.getRowCount(); i++) {
+                if (modeloTabla.getValueAt(i, 1).equals(codigoBuscar)) {
+                    filaExistente = i;
+                    break;
                 }
             }
 
-            double subtotal = precio * cantidad;
-            modeloTabla.addRow(new Object[]{
-                txtCodigoProd.getText(),
-                txtNombreProd.getText(),
-                cantidad,
-                String.format("%.2f", precio),
-                String.format("%.2f", subtotal)
-            });
+            if (filaExistente >= 0) {
+                // Si existe, actualizar la cantidad
+                int cantidadActual = (int) modeloTabla.getValueAt(filaExistente, 2);
+                int nuevaCantidad = cantidadActual + cantidad;
+
+                // Verificar que no supere el stock
+                if (nuevaCantidad > stock) {
+                    JOptionPane.showMessageDialog(this,
+                            "No puede agregar mas. Stock disponible: " + stock
+                            + " | Actual: " + cantidadActual,
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                // Actualizar la cantidad y el subtotal
+                double subtotal = precio * nuevaCantidad;
+                modeloTabla.setValueAt(nuevaCantidad, filaExistente, 3);
+                modeloTabla.setValueAt(String.format("%.2f", subtotal).replace(",", "."), filaExistente, 5);
+            } else {
+                // Si no existe, agregar nuevo producto
+                double subtotal = precio * cantidad;
+                modeloTabla.addRow(new Object[]{
+                    idProductoSeleccionado,
+                    nombreProductoSeleccionado.isEmpty() ? txtCodigoProd.getText() : nombreProductoSeleccionado,
+                    descripcionProductoSeleccionado.isEmpty() ? txtNombreProd.getText() : descripcionProductoSeleccionado,
+                    cantidad,
+                    String.format("%.2f", precio).replace(",", "."),
+                    String.format("%.2f", subtotal).replace(",", ".")
+                }
+                );
+
+            }
 
             calcularTotales();
             limpiarCamposProducto();
 
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Error en los datos del producto", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                    "Error en los datos del producto. Verifique el precio y stock.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void cargarProductoParaEditar(int fila) {
+        try {
+            int idProducto = (int) modeloTabla.getValueAt(fila, 0);  // ← Obtener ID de la tabla
+            String codigo = (String) modeloTabla.getValueAt(fila, 1);
+            String descripcion = (String) modeloTabla.getValueAt(fila, 2);
+            int cantidad = (int) modeloTabla.getValueAt(fila, 3);
+            String precioStr = (String) modeloTabla.getValueAt(fila, 4);
+            precioStr = precioStr.replace(",", ".");
+            double precio = Double.parseDouble(precioStr);
+
+            // ✅ Buscar por ID en lugar de por nombre
+            Producto producto = controlProducto.buscarProducto(idProducto);
+            if (producto != null) {
+                stockProductoEditando = producto.getCantidad();
+                nombreProductoSeleccionado = producto.getNombre();
+                descripcionProductoSeleccionado = producto.getDescripcion();
+            } else {
+                stockProductoEditando = 999;
+            }
+
+            txtCodigoProd.setText(codigo);
+            txtNombreProd.setText(descripcion);
+            txtPrecioProd.setText(String.valueOf(precio));
+            txtStockProd.setText(String.valueOf(stockProductoEditando));
+            spinCantidad.setValue(cantidad);
+
+            filaEditando = fila;
+            btnAgregarProd.setText("Actualizar Producto");
+            btnAgregarProd.setBackground(new Color(255, 165, 0));
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al cargar producto: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -352,26 +511,22 @@ public class Internueva_venta extends JInternalFrame {
         if (fila >= 0) {
             modeloTabla.removeRow(fila);
             calcularTotales();
-            JOptionPane.showMessageDialog(this, "Producto eliminado de la factura", "Info", JOptionPane.INFORMATION_MESSAGE);
         } else {
             JOptionPane.showMessageDialog(this, "Seleccione un producto de la tabla", "Error", JOptionPane.WARNING_MESSAGE);
         }
     }
 
     private void registrarVenta() {
-        // Verificar que haya productos
         if (modeloTabla.getRowCount() == 0) {
             JOptionPane.showMessageDialog(this, "Agregue al menos un producto", "Error", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        // Verificar que haya cliente
         if (idClienteSeleccionado == 0) {
             JOptionPane.showMessageDialog(this, "Seleccione un cliente", "Error", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        // Confirmar
         int confirm = JOptionPane.showConfirmDialog(this,
                 "¿Registrar venta por $" + txtTotal.getText() + "?",
                 "Confirmar",
@@ -379,22 +534,24 @@ public class Internueva_venta extends JInternalFrame {
 
         if (confirm == JOptionPane.YES_OPTION) {
             try {
-                // Crear objeto Venta
                 Venta venta = new Venta();
                 venta.setIdCliente(idClienteSeleccionado);
-                venta.setIdUsuario(1); // TODO: Obtener del login
                 venta.setValorpagar(Double.parseDouble(txtTotal.getText()));
                 venta.setEstado(1);
 
-                // Crear lista de detalles
                 List<DetalleVenta> detalles = new ArrayList<>();
                 for (int i = 0; i < modeloTabla.getRowCount(); i++) {
                     DetalleVenta detalle = new DetalleVenta();
-                    // TODO: Obtener ID del producto desde la tabla (necesitas agregar columna ID)
-                    detalle.setIdProducto(1); // Temporal
-                    detalle.setCantidad((int) modeloTabla.getValueAt(i, 2));
-                    detalle.setPreciounitario(Double.parseDouble((String) modeloTabla.getValueAt(i, 3)));
-                    detalle.setSubtotal(Double.parseDouble((String) modeloTabla.getValueAt(i, 4)));
+
+                    // Obtener el ID del producto (columna 0 si la tienes)
+                    detalle.setIdProducto((int) modeloTabla.getValueAt(i, 0));
+                    detalle.setCantidad((int) modeloTabla.getValueAt(i, 3));
+                    detalle.setPreciounitario(Double.parseDouble(
+                            ((String) modeloTabla.getValueAt(i, 4)).replace(",", ".")
+                    ));
+                    detalle.setSubtotal(Double.parseDouble(
+                            ((String) modeloTabla.getValueAt(i, 5)).replace(",", ".")
+                    ));
                     detalle.setDescuento(0.0);
                     detalle.setIva(Double.parseDouble(txtIva.getText()));
                     detalle.setTotalpagar(Double.parseDouble(txtTotal.getText()));
@@ -402,20 +559,24 @@ public class Internueva_venta extends JInternalFrame {
                     detalles.add(detalle);
                 }
 
-                // Guardar venta
                 int idVenta = controlVenta.guardar(venta, detalles);
 
                 if (idVenta > 0) {
-                    JOptionPane.showMessageDialog(this, "✅ Venta registrada exitosamente. ID: " + idVenta,
+                    JOptionPane.showMessageDialog(this, "Venta registrada exitosamente. ID: " + idVenta,
                             "Éxito", JOptionPane.INFORMATION_MESSAGE);
                     limpiarTodo();
                 } else {
-                    JOptionPane.showMessageDialog(this, "❌ Error al registrar la venta",
+                    JOptionPane.showMessageDialog(this, "Error al registrar la venta",
                             "Error", JOptionPane.ERROR_MESSAGE);
                 }
 
             } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "Error al procesar los datos", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Error al procesar los datos: " + e.getMessage(),
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(),
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                e.printStackTrace();
             }
         }
     }
@@ -423,11 +584,13 @@ public class Internueva_venta extends JInternalFrame {
     private void calcularTotales() {
         double subtotal = 0;
         for (int i = 0; i < modeloTabla.getRowCount(); i++) {
-            subtotal += Double.parseDouble((String) modeloTabla.getValueAt(i, 4));
+            String subtotalStr = (String) modeloTabla.getValueAt(i, 5);
+            subtotalStr = subtotalStr.replace(",", ".");
+            subtotal += Double.parseDouble(subtotalStr);
         }
-        txtSubtotal.setText(String.format("%.2f", subtotal));
-        txtIva.setText(String.format("%.2f", subtotal * PORCENTAJE_IVA));
-        txtTotal.setText(String.format("%.2f", subtotal * (1 + PORCENTAJE_IVA)));
+        txtSubtotal.setText(String.format("%.2f", subtotal).replace(",", "."));
+        txtIva.setText(String.format("%.2f", subtotal * PORCENTAJE_IVA).replace(",", "."));
+        txtTotal.setText(String.format("%.2f", subtotal * (1 + PORCENTAJE_IVA)).replace(",", "."));
     }
 
     private void limpiarCamposProducto() {
@@ -437,6 +600,12 @@ public class Internueva_venta extends JInternalFrame {
         txtStockProd.setText("");
         spinCantidad.setValue(1);
         idProductoSeleccionado = 0;
+        nombreProductoSeleccionado = "";
+        descripcionProductoSeleccionado = "";
+        filaEditando = -1;
+        stockProductoEditando = 0;
+        btnAgregarProd.setText("Agregar a Factura");
+        btnAgregarProd.setBackground(new Color(34, 139, 34));
         txtCodigoProd.requestFocus();
     }
 
