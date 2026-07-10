@@ -83,15 +83,15 @@ public class InterGestionarCliente extends javax.swing.JInternalFrame {
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jTable_clientes.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
+                new Object[][]{
+                    {null, null, null, null},
+                    {null, null, null, null},
+                    {null, null, null, null},
+                    {null, null, null, null}
+                },
+                new String[]{
+                    "Title 1", "Title 2", "Title 3", "Title 4"
+                }
         ));
         jScrollPane1.setViewportView(jTable_clientes);
 
@@ -175,33 +175,35 @@ public class InterGestionarCliente extends javax.swing.JInternalFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton_actualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_actualizarActionPerformed
-
-        if (txt_nombre.getText().isEmpty() && txt_apellido.getText().isEmpty()
-                && txt_cedula.getText().isEmpty() && txt_telefono.getText().isEmpty() && txt_direccion.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(null, "¡Completa todos los campos!");
-        } else {
-
-            Cliente cliente = new Cliente();
-            Ctrl_Cliente controlCliente = new Ctrl_Cliente();
-
-            cliente.setNombre(txt_nombre.getText().trim());
-            cliente.setApellido(txt_apellido.getText().trim());
-            cliente.setCedula(txt_cedula.getText().trim());
-            cliente.setTelefono(txt_telefono.getText().trim());
-            cliente.setDireccion(txt_direccion.getText().trim());
-            cliente.setEstado(1);
-
-            if (controlCliente.actualizar(cliente, idCliente)) {
-                JOptionPane.showMessageDialog(null, "¡Datos del cliente actualizados!");
-                this.CargarTablaClientes();
-                this.Limpiar();
-            } else {
-                JOptionPane.showMessageDialog(null, "¡Error al actualizar!");
-            }
-
+    private void jButton_actualizarActionPerformed(java.awt.event.ActionEvent evt) {
+        if (idCliente == 0) {
+            JOptionPane.showMessageDialog(null, "Seleccione un cliente de la tabla!");
+            return;
         }
 
+        if (txt_nombre.getText().isEmpty() || txt_apellido.getText().isEmpty()
+                || txt_cedula.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Complete los campos obligatorios (Nombre, Apellido, Cedula)!");
+            return;
+        }
+
+        Cliente cliente = new Cliente();
+        Ctrl_Cliente controlCliente = new Ctrl_Cliente();
+
+        cliente.setNombre(txt_nombre.getText().trim());
+        cliente.setApellido(txt_apellido.getText().trim());
+        cliente.setCedula(txt_cedula.getText().trim());
+        cliente.setTelefono(txt_telefono.getText().trim());
+        cliente.setDireccion(txt_direccion.getText().trim());
+        cliente.setEstado(1);
+
+        if (controlCliente.actualizar(cliente, idCliente)) {
+            JOptionPane.showMessageDialog(null, "Datos del cliente actualizados!");
+            this.CargarTablaClientes();
+            this.Limpiar();
+        } else {
+            JOptionPane.showMessageDialog(null, "Error al actualizar!");
+        }
     }//GEN-LAST:event_jButton_actualizarActionPerformed
 
     private void jButton_eliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_eliminarActionPerformed
@@ -210,7 +212,7 @@ public class InterGestionarCliente extends javax.swing.JInternalFrame {
         if (idCliente == 0) {
             JOptionPane.showMessageDialog(null, "¡Seleccione un cliente!");
         } else {
-            if (!controlCliente.eliminar(idCliente)) {
+            if (controlCliente.eliminar(idCliente)) {
                 JOptionPane.showMessageDialog(null, "¡Cliente Eliminado!");
                 this.CargarTablaClientes();
                 this.Limpiar();
@@ -221,7 +223,6 @@ public class InterGestionarCliente extends javax.swing.JInternalFrame {
         }
 
     }//GEN-LAST:event_jButton_eliminarActionPerformed
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton_actualizar;
