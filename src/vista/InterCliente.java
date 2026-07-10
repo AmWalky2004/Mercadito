@@ -16,7 +16,6 @@ public class InterCliente extends javax.swing.JInternalFrame {
         limpiarCampos();
     }
 
-
     // ============================================================
     // LIMPIAR CAMPOS
     // ============================================================
@@ -191,14 +190,14 @@ public class InterCliente extends javax.swing.JInternalFrame {
         if (controlCliente.guardar(cliente)) {
             JOptionPane.showMessageDialog(this, "Cliente guardado exitosamente");
 
-            // ✅ Mostrar feedback con color verde
+            // Mostrar feedback con color verde
             txt_nombre.setBackground(new Color(144, 238, 144));
             txt_apellido.setBackground(new Color(144, 238, 144));
             txt_cedula.setBackground(new Color(144, 238, 144));
             txt_telefono.setBackground(new Color(144, 238, 144));
             txt_direccion.setBackground(new Color(144, 238, 144));
 
-            // ✅ Limpiar campos (restablece a BLANCO)
+            // Limpiar campos (restablece a BLANCO)
             limpiarCampos();
         } else {
             JOptionPane.showMessageDialog(this, "Error al guardar el cliente");
@@ -208,7 +207,10 @@ public class InterCliente extends javax.swing.JInternalFrame {
     private void txt_direccionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_direccionActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txt_direccionActionPerformed
-
+    //Dependencia de In.NuevaVenta
+    public void setCedula(String cedula) {
+        txt_cedula.setText(cedula);
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton_Guardar;

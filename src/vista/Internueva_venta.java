@@ -395,7 +395,21 @@ public class Internueva_venta extends JInternalFrame {
             txtTelefonoCliente.setText(cliente.getTelefono());
             idClienteSeleccionado = cliente.getIdCliente();
         } else {
-            JOptionPane.showMessageDialog(this, "Cliente no encontrado: " + cedula, "Error", JOptionPane.ERROR_MESSAGE);
+            // Cliente no encontrado - preguntar si desea registrarlo
+            int confirm = JOptionPane.showConfirmDialog(this,
+                    "Cliente no registrado con cedula: " + cedula + "\n¿Desea registrarlo?",
+                    "Cliente no encontrado",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE);
+
+            if (confirm == JOptionPane.YES_OPTION) {
+                // Abrir ventana de nuevo cliente
+                InterCliente nuevoCliente = new InterCliente();
+                // Pasar la cedula para que se cargue automaticamente
+                nuevoCliente.setCedula(cedula);
+                this.getDesktopPane().add(nuevoCliente);
+                nuevoCliente.setVisible(true);
+            }
         }
     }
 
@@ -421,111 +435,111 @@ public class Internueva_venta extends JInternalFrame {
         }
     }
 
-private void agregarProducto() {
-    if (txtNombreProd.getText().isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Primero busque un producto", "Error", JOptionPane.WARNING_MESSAGE);
-        return;
-    }
-
-    try {
-        // Usar variables guardadas en lugar de leer los campos de texto
-        double precio = precioProductoActual;
-        int stock = stockProductoActual;
-        int cantidad = (int) spinCantidad.getValue();
-
-        // Si estamos editando un producto de la tabla, usar el stock de edicion
-        if (filaEditando >= 0) {
-            stock = stockProductoEditando;
-        }
-
-        // Verificar que el precio no sea 0
-        if (precio == 0) {
-            JOptionPane.showMessageDialog(this, "Precio del producto no disponible. Busque el producto nuevamente.", "Error", JOptionPane.ERROR_MESSAGE);
+    private void agregarProducto() {
+        if (txtNombreProd.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Primero busque un producto", "Error", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        if (cantidad > stock) {
-            JOptionPane.showMessageDialog(this, "Stock insuficiente. Disponible: " + stock,
-                    "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
+        try {
+            // Usar variables guardadas en lugar de leer los campos de texto
+            double precio = precioProductoActual;
+            int stock = stockProductoActual;
+            int cantidad = (int) spinCantidad.getValue();
 
-        // Si estamos editando un producto de la tabla
-        if (filaEditando >= 0) {
-            if (cantidad > stockProductoEditando) {
-                JOptionPane.showMessageDialog(this,
-                        "Stock insuficiente. Stock disponible: " + stockProductoEditando,
+            // Si estamos editando un producto de la tabla, usar el stock de edicion
+            if (filaEditando >= 0) {
+                stock = stockProductoEditando;
+            }
+
+            // Verificar que el precio no sea 0
+            if (precio == 0) {
+                JOptionPane.showMessageDialog(this, "Precio del producto no disponible. Busque el producto nuevamente.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (cantidad > stock) {
+                JOptionPane.showMessageDialog(this, "Stock insuficiente. Disponible: " + stock,
                         "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            double subtotal = precio * cantidad;
-            modeloTabla.setValueAt(String.valueOf(cantidad), filaEditando, 3);
-            modeloTabla.setValueAt(String.format("%.2f", subtotal).replace(",", "."), filaEditando, 5);
-            btnAgregarProd.setText("Agregar a Factura");
-            btnAgregarProd.setBackground(new Color(34, 139, 34));
-            filaEditando = -1;
-            stockProductoEditando = 0;
+            // Si estamos editando un producto de la tabla
+            if (filaEditando >= 0) {
+                if (cantidad > stockProductoEditando) {
+                    JOptionPane.showMessageDialog(this,
+                            "Stock insuficiente. Stock disponible: " + stockProductoEditando,
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                double subtotal = precio * cantidad;
+                modeloTabla.setValueAt(String.valueOf(cantidad), filaEditando, 3);
+                modeloTabla.setValueAt(String.format("%.2f", subtotal).replace(",", "."), filaEditando, 5);
+                btnAgregarProd.setText("Agregar a Factura");
+                btnAgregarProd.setBackground(new Color(34, 139, 34));
+                filaEditando = -1;
+                stockProductoEditando = 0;
+
+                calcularTotales();
+                limpiarCamposProducto();
+                return;
+            }
+
+            // Buscar si el producto ya está en la tabla
+            int filaExistente = -1;
+            String codigoBuscar = nombreProductoSeleccionado.isEmpty() ? cmbProducto.getEditor().getItem().toString() : nombreProductoSeleccionado;
+            for (int i = 0; i < modeloTabla.getRowCount(); i++) {
+                if (modeloTabla.getValueAt(i, 1).equals(codigoBuscar)) {
+                    filaExistente = i;
+                    break;
+                }
+            }
+
+            if (filaExistente >= 0) {
+                // Si existe, actualizar la cantidad
+                int cantidadActual = Integer.parseInt(modeloTabla.getValueAt(filaExistente, 2).toString());
+                int nuevaCantidad = cantidadActual + cantidad;
+
+                if (nuevaCantidad > stock) {
+                    JOptionPane.showMessageDialog(this,
+                            "No puede agregar mas. Stock disponible: " + stock
+                            + " | Actual: " + cantidadActual,
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                double subtotal = precio * nuevaCantidad;
+                modeloTabla.setValueAt(String.valueOf(nuevaCantidad), filaExistente, 3);
+                modeloTabla.setValueAt(String.format("%.2f", subtotal).replace(",", "."), filaExistente, 5);
+
+                if (filaEditando == filaExistente) {
+                    filaEditando = -1;
+                    btnAgregarProd.setText("Agregar a Factura");
+                    btnAgregarProd.setBackground(new Color(34, 139, 34));
+                }
+            } else {
+                // Si no existe, agregar nuevo producto
+                double subtotal = precio * cantidad;
+                modeloTabla.addRow(new Object[]{
+                    String.valueOf(idProductoSeleccionado),
+                    nombreProductoSeleccionado.isEmpty() ? cmbProducto.getEditor().getItem().toString() : nombreProductoSeleccionado,
+                    descripcionProductoSeleccionado.isEmpty() ? txtNombreProd.getText() : descripcionProductoSeleccionado,
+                    String.valueOf(cantidad),
+                    String.format("%.2f", precio).replace(",", "."),
+                    String.format("%.2f", subtotal).replace(",", ".")
+                });
+            }
 
             calcularTotales();
             limpiarCamposProducto();
-            return;
+
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this,
+                    "Error en los datos del producto. Verifique el precio y stock.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
         }
-
-        // Buscar si el producto ya está en la tabla
-        int filaExistente = -1;
-        String codigoBuscar = nombreProductoSeleccionado.isEmpty() ? cmbProducto.getEditor().getItem().toString() : nombreProductoSeleccionado;
-        for (int i = 0; i < modeloTabla.getRowCount(); i++) {
-            if (modeloTabla.getValueAt(i, 1).equals(codigoBuscar)) {
-                filaExistente = i;
-                break;
-            }
-        }
-
-        if (filaExistente >= 0) {
-            // Si existe, actualizar la cantidad
-            int cantidadActual = Integer.parseInt(modeloTabla.getValueAt(filaExistente, 2).toString());
-            int nuevaCantidad = cantidadActual + cantidad;
-
-            if (nuevaCantidad > stock) {
-                JOptionPane.showMessageDialog(this,
-                        "No puede agregar mas. Stock disponible: " + stock
-                        + " | Actual: " + cantidadActual,
-                        "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            double subtotal = precio * nuevaCantidad;
-            modeloTabla.setValueAt(String.valueOf(nuevaCantidad), filaExistente, 3);
-            modeloTabla.setValueAt(String.format("%.2f", subtotal).replace(",", "."), filaExistente, 5);
-
-            if (filaEditando == filaExistente) {
-                filaEditando = -1;
-                btnAgregarProd.setText("Agregar a Factura");
-                btnAgregarProd.setBackground(new Color(34, 139, 34));
-            }
-        } else {
-            // Si no existe, agregar nuevo producto
-            double subtotal = precio * cantidad;
-            modeloTabla.addRow(new Object[]{
-                String.valueOf(idProductoSeleccionado),
-                nombreProductoSeleccionado.isEmpty() ? cmbProducto.getEditor().getItem().toString() : nombreProductoSeleccionado,
-                descripcionProductoSeleccionado.isEmpty() ? txtNombreProd.getText() : descripcionProductoSeleccionado,
-                String.valueOf(cantidad),
-                String.format("%.2f", precio).replace(",", "."),
-                String.format("%.2f", subtotal).replace(",", ".")
-            });
-        }
-
-        calcularTotales();
-        limpiarCamposProducto();
-
-    } catch (NumberFormatException e) {
-        JOptionPane.showMessageDialog(this,
-                "Error en los datos del producto. Verifique el precio y stock.",
-                "Error", JOptionPane.ERROR_MESSAGE);
     }
-}
 
     private void cargarProductoParaEditar(int fila) {
         try {
