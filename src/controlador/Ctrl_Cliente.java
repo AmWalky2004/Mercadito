@@ -190,4 +190,71 @@ public class Ctrl_Cliente {
         return cliente;
     }
 
+    //================= ACTUALIZAR CLIENTE ====================
+    public boolean actualizar(Cliente cliente, int idCliente) {
+        boolean respuesta = false;
+        Connection cn = null;
+        PreparedStatement consulta = null;
+
+        try {
+            cn = Conexion.conectar();
+            String sql = "UPDATE tb_cliente SET nombre = ?, apellido = ?, cedula = ?, telefono = ?, direccion = ?, estado = ? WHERE idcliente = ?";
+            consulta = cn.prepareStatement(sql);
+            consulta.setString(1, cliente.getNombre());
+            consulta.setString(2, cliente.getApellido());
+            consulta.setString(3, cliente.getCedula());
+            consulta.setString(4, cliente.getTelefono());
+            consulta.setString(5, cliente.getDireccion());
+            consulta.setInt(6, cliente.getEstado());
+            consulta.setInt(7, idCliente);
+
+            if (consulta.executeUpdate() > 0) {
+                respuesta = true;
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error al actualizar cliente: " + e.getMessage());
+        } finally {
+            try {
+                if (consulta != null) {
+                    consulta.close();
+                }
+                if (cn != null) {
+                    cn.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return respuesta;
+    }
+    //============= ELIMINAR CLIENTE ==============
+    public boolean eliminar(int idCliente) {
+    boolean respuesta = false;
+    Connection cn = null;
+    PreparedStatement consulta = null;
+
+    try {
+        cn = Conexion.conectar();
+        String sql = "DELETE FROM tb_cliente WHERE idcliente = ?";
+        consulta = cn.prepareStatement(sql);
+        consulta.setInt(1, idCliente);
+
+        if (consulta.executeUpdate() > 0) {
+            respuesta = true;
+        }
+
+    } catch (SQLException e) {
+        System.out.println("Error al eliminar cliente: " + e.getMessage());
+    } finally {
+        try {
+            if (consulta != null) consulta.close();
+            if (cn != null) cn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    return respuesta;
+}
+
 }

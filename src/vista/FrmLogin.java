@@ -218,34 +218,37 @@ public class FrmLogin extends javax.swing.JFrame {
     private javax.swing.JTextField txt_usuario;
     // End of variables declaration//GEN-END:variables
         //
+
     private void Login() {
         if (!txt_usuario.getText().isEmpty() && !txt_password.getText().isEmpty()) {
 
-            // Controlador del Gerente
-            controlador.Ctrl_UsuarioGerente controlGerente = new controlador.Ctrl_UsuarioGerente();
-            modelo.Usuario usuario = new modelo.Usuario();
-            
+            Ctrl_Usuario controlUsuario = new Ctrl_Usuario();
+            Usuario usuario = new Usuario();
+
             usuario.setUsuario(txt_usuario.getText().trim());
             usuario.setPassword(txt_password.getText().trim());
-            
-            //RECIBIMOS EL NÚMERO DE ESTADO DE MYSQL (1, 2 o 0)
-            int tipoUsuario = controlGerente.loginUserGerente(usuario);
 
-            // DECIDIMOS A QUÉ OFICINA VA SEGÚN SU NÚMERO
-            if (tipoUsuario == 1) { 
-                // Si el estado es 1, es Administrador
+            int tipoUsuario = controlUsuario.loginUser(usuario);
+
+            if (tipoUsuario == 1) {
+                // Administrador
                 FrmMenu menuAdmin = new FrmMenu();
                 menuAdmin.setVisible(true);
                 this.dispose();
-                
-            } else if (tipoUsuario == 2) { 
-                // Si el estado es 2, es Gerente
-                vista.FrmMenuGerente menuGerente = new vista.FrmMenuGerente();
+
+            } else if (tipoUsuario == 2) {
+                // Gerente
+                FrmMenuGerente menuGerente = new FrmMenuGerente();
                 menuGerente.setVisible(true);
                 this.dispose();
-                
-            } else { 
-                // Si devuelve 0, significa que los datos están mal escritos
+
+            } else if (tipoUsuario == 3) {
+                // Cajero
+                FrmMenuCajero menuCajero = new FrmMenuCajero();
+                menuCajero.setVisible(true);
+                this.dispose();
+
+            } else {
                 JOptionPane.showMessageDialog(null, "Usuario o clave incorrecta.");
             }
 
@@ -253,5 +256,4 @@ public class FrmLogin extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Ingrese sus Credenciales.");
         }
     }
-
 }

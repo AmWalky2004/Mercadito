@@ -6,6 +6,7 @@ import java.awt.Image;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JDesktopPane;
+import reportes.Reportes;
 
 public class FrmMenu extends javax.swing.JFrame {
 
@@ -153,6 +154,7 @@ public class FrmMenu extends javax.swing.JFrame {
         gestionar_cliente.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/cliente.png"))); // NOI18N
         gestionar_cliente.setText("Gestionar Cliente");
         gestionar_cliente.setPreferredSize(new java.awt.Dimension(180, 30));
+        gestionar_cliente.addActionListener(this::gestionar_clienteActionPerformed);
         jMenu3.add(gestionar_cliente);
 
         jMenuBar1.add(jMenu3);
@@ -186,6 +188,7 @@ public class FrmMenu extends javax.swing.JFrame {
         reportes_clientes.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/reporte1.png"))); // NOI18N
         reportes_clientes.setText("Reportes Clientes");
         reportes_clientes.setPreferredSize(new java.awt.Dimension(180, 30));
+        reportes_clientes.addActionListener(this::reportes_clientesActionPerformed);
         jMenu6.add(reportes_clientes);
 
         reportes_categorias.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/reporte1.png"))); // NOI18N
@@ -197,6 +200,7 @@ public class FrmMenu extends javax.swing.JFrame {
         reportes_productos.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/reporte1.png"))); // NOI18N
         reportes_productos.setText("Reportes Productos");
         reportes_productos.setPreferredSize(new java.awt.Dimension(180, 30));
+        reportes_productos.addActionListener(this::reportes_productosActionPerformed);
         jMenu6.add(reportes_productos);
 
         reportes_ventas.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/reporte1.png"))); // NOI18N
@@ -264,11 +268,13 @@ public class FrmMenu extends javax.swing.JFrame {
     }//GEN-LAST:event_gestionar_ventaActionPerformed
 
     private void reportes_categoriasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reportes_categoriasActionPerformed
-        // TODO add your handling code here:
+        Reportes reporte = new Reportes();
+        reporte.generarReporteCategorias();
     }//GEN-LAST:event_reportes_categoriasActionPerformed
 
     private void reportes_ventasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reportes_ventasActionPerformed
-        // TODO add your handling code here:
+        Reportes reporte = new Reportes();
+        reporte.generarReporteVentas();
     }//GEN-LAST:event_reportes_ventasActionPerformed
 
     private void ver_historialActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ver_historialActionPerformed
@@ -314,6 +320,22 @@ public class FrmMenu extends javax.swing.JFrame {
         jDesktopPane_menu.add(intercliente);
         intercliente.setVisible(true);
     }//GEN-LAST:event_nuevo_clienteActionPerformed
+
+    private void reportes_clientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reportes_clientesActionPerformed
+        Reportes reporte = new Reportes();
+        reporte.generarReporteClientes();
+    }//GEN-LAST:event_reportes_clientesActionPerformed
+
+    private void reportes_productosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reportes_productosActionPerformed
+        Reportes reporte = new Reportes();
+        reporte.generarReporteProductos();
+    }//GEN-LAST:event_reportes_productosActionPerformed
+
+    private void gestionar_clienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gestionar_clienteActionPerformed
+        InterGestionarCliente gestion = new InterGestionarCliente();
+    jDesktopPane_menu.add(gestion);
+    gestion.setVisible(true);
+    }//GEN-LAST:event_gestionar_clienteActionPerformed
 
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(() -> new FrmMenu().setVisible(true));

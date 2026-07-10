@@ -12,6 +12,7 @@ import javax.swing.table.DefaultTableModel;
 import modelo.Cliente;
 import modelo.Producto;
 import modelo.Venta;
+import util.AutoCompletadoCB;
 import modelo.DetalleVenta;
 
 public class Internueva_venta extends JInternalFrame {
@@ -21,7 +22,9 @@ public class Internueva_venta extends JInternalFrame {
     private JButton btnBuscarCliente;
 
     // Componentes para Producto
-    private JTextField txtCodigoProd, txtNombreProd, txtPrecioProd, txtStockProd;
+    private JComboBox<String> cmbProducto;
+    private JTextField txtNombreProd, txtPrecioProd, txtStockProd;
+    private AutoCompletadoCB autoCompletadoProducto;
     private JSpinner spinCantidad;
     private JButton btnBuscarProd, btnAgregarProd;
 
@@ -46,6 +49,8 @@ public class Internueva_venta extends JInternalFrame {
     private String descripcionProductoSeleccionado = "";
     private int filaEditando = -1;
     private int stockProductoEditando = 0;
+    private double precioProductoActual = 0;
+    private int stockProductoActual = 0;
 
     // Constante para el IVA
     private static final double PORCENTAJE_IVA = 0.16;
@@ -59,7 +64,7 @@ public class Internueva_venta extends JInternalFrame {
         controlVenta = new Ctrl_Venta();
 
         initComponents();
-
+        cargarProductosEnCombo();
         configurarEventos();
 
         setSize(1000, 650);
@@ -135,9 +140,11 @@ public class Internueva_venta extends JInternalFrame {
         gbc.gridy = 0;
         gbc.gridwidth = 1;
         panelProducto.add(new JLabel("Producto:"), gbc);
-        txtCodigoProd = new JTextField(10);
+        cmbProducto = new JComboBox<>();
+        cmbProducto.setEditable(true);
+        cmbProducto.setPreferredSize(new Dimension(150, 25));
         gbc.gridx = 1;
-        panelProducto.add(txtCodigoProd, gbc);
+        panelProducto.add(cmbProducto, gbc);
         btnBuscarProd = new JButton("Buscar");
         btnBuscarProd.setBackground(new Color(0, 80, 136));
         btnBuscarProd.setForeground(Color.WHITE);
@@ -266,6 +273,23 @@ public class Internueva_venta extends JInternalFrame {
     // ==========================================
     // EVENTOS
     // ==========================================
+    private void cargarProductosEnCombo() {
+        // 1. Crear una lista vacía para guardar los nombres de productos
+        List<String> nombresProductos = new ArrayList<>();
+
+        // 2. Obtener todos los productos de la base de datos
+        List<Producto> productos = controlProducto.listarProductos();
+
+        // 3. Recorrer cada producto y guardar solo su nombre en la lista
+        for (Producto p : productos) {
+            nombresProductos.add(p.getNombre());
+        }
+
+        // 4. Crear el autocompletado y pasarle la lista de nombres
+        autoCompletadoProducto = new AutoCompletadoCB(cmbProducto);
+        autoCompletadoProducto.setItems(nombresProductos);
+    }
+
     private void configurarEventos() {
         // 1. Buscar Cliente
         btnBuscarCliente.addActionListener(new java.awt.event.ActionListener() {
@@ -315,12 +339,33 @@ public class Internueva_venta extends JInternalFrame {
             }
         });
 
-        txtCodigoProd.addActionListener(new java.awt.event.ActionListener() {
+        cmbProducto.getEditor().addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent e) {
-                buscarProducto();
+                if (idProductoSeleccionado != 0 && !txtNombreProd.getText().isEmpty()) {
+                    agregarProducto();
+                } else {
+                    buscarProducto();
+                }
             }
         });
+        spinCantidad.addKeyListener(new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyPressed(java.awt.event.KeyEvent e) {
+                if (e.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
+                    agregarProducto();
+                }
+            }
+        });
+        btnAgregarProd.addKeyListener(new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyPressed(java.awt.event.KeyEvent e) {
+                if (e.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
+                    agregarProducto();
+                }
+            }
+        });
+
     }
     // ==========================================
     // MÉTODOS FUNCIONALES
@@ -355,7 +400,7 @@ public class Internueva_venta extends JInternalFrame {
     }
 
     private void buscarProducto() {
-        String nombre = txtCodigoProd.getText().trim();
+        String nombre = cmbProducto.getEditor().getItem().toString().trim();
         if (nombre.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Ingrese el nombre del producto", "Error", JOptionPane.WARNING_MESSAGE);
             return;
@@ -364,134 +409,147 @@ public class Internueva_venta extends JInternalFrame {
         Producto producto = controlProducto.buscarProductoPorNombre(nombre);
         if (producto != null) {
             txtNombreProd.setText(producto.getDescripcion());
-            txtPrecioProd.setText(String.valueOf(producto.getPrecio()));
             txtPrecioProd.setText(String.format("%.2f", producto.getPrecio()).replace(",", "."));
             txtStockProd.setText(String.valueOf(producto.getCantidad()));
             idProductoSeleccionado = producto.getIdProducto();
             nombreProductoSeleccionado = producto.getNombre();
             descripcionProductoSeleccionado = producto.getDescripcion();
+            precioProductoActual = producto.getPrecio();
+            stockProductoActual = producto.getCantidad();
         } else {
             JOptionPane.showMessageDialog(this, "Producto no encontrado: " + nombre, "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    private void agregarProducto() {
-        if (txtNombreProd.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Primero busque un producto", "Error", JOptionPane.WARNING_MESSAGE);
+private void agregarProducto() {
+    if (txtNombreProd.getText().isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Primero busque un producto", "Error", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    try {
+        // Usar variables guardadas en lugar de leer los campos de texto
+        double precio = precioProductoActual;
+        int stock = stockProductoActual;
+        int cantidad = (int) spinCantidad.getValue();
+
+        // Si estamos editando un producto de la tabla, usar el stock de edicion
+        if (filaEditando >= 0) {
+            stock = stockProductoEditando;
+        }
+
+        // Verificar que el precio no sea 0
+        if (precio == 0) {
+            JOptionPane.showMessageDialog(this, "Precio del producto no disponible. Busque el producto nuevamente.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        try {
-            String precioTexto = txtPrecioProd.getText().trim().replace(",", ".");
-            String stockTexto = txtStockProd.getText().trim();
+        if (cantidad > stock) {
+            JOptionPane.showMessageDialog(this, "Stock insuficiente. Disponible: " + stock,
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-            double precio = Double.parseDouble(precioTexto);
-            int stock = Integer.parseInt(stockTexto);
-            int cantidad = (int) spinCantidad.getValue();
-
-            if (cantidad > stock) {
-                JOptionPane.showMessageDialog(this, "Stock insuficiente. Disponible: " + stock,
+        // Si estamos editando un producto de la tabla
+        if (filaEditando >= 0) {
+            if (cantidad > stockProductoEditando) {
+                JOptionPane.showMessageDialog(this,
+                        "Stock insuficiente. Stock disponible: " + stockProductoEditando,
                         "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-// Si estamos editando un producto de la tabla
-            if (filaEditando >= 0) {
-                // Verificar que no supere el stock real
-                if (cantidad > stockProductoEditando) {
-                    JOptionPane.showMessageDialog(this,
-                            "Stock insuficiente. Stock disponible: " + stockProductoEditando,
-                            "Error", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-
-                double subtotal = precio * cantidad;
-                modeloTabla.setValueAt(cantidad, filaEditando, 3);
-                modeloTabla.setValueAt(String.format("%.2f", subtotal).replace(",", "."), filaEditando, 5);
-                btnAgregarProd.setText("Agregar a Factura");
-                btnAgregarProd.setBackground(new Color(34, 139, 34));
-                filaEditando = -1;
-                stockProductoEditando = 0;
-
-                calcularTotales();
-                limpiarCamposProducto();
-                return;
-            }
-
-            //Buscar si el producto ya está en la tabla
-            int filaExistente = -1;
-            String codigoBuscar = nombreProductoSeleccionado.isEmpty() ? txtCodigoProd.getText() : nombreProductoSeleccionado;
-            for (int i = 0; i < modeloTabla.getRowCount(); i++) {
-                if (modeloTabla.getValueAt(i, 1).equals(codigoBuscar)) {
-                    filaExistente = i;
-                    break;
-                }
-            }
-
-            if (filaExistente >= 0) {
-                // Si existe, actualizar la cantidad
-                int cantidadActual = (int) modeloTabla.getValueAt(filaExistente, 2);
-                int nuevaCantidad = cantidadActual + cantidad;
-
-                // Verificar que no supere el stock
-                if (nuevaCantidad > stock) {
-                    JOptionPane.showMessageDialog(this,
-                            "No puede agregar mas. Stock disponible: " + stock
-                            + " | Actual: " + cantidadActual,
-                            "Error", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-
-                // Actualizar la cantidad y el subtotal
-                double subtotal = precio * nuevaCantidad;
-                modeloTabla.setValueAt(nuevaCantidad, filaExistente, 3);
-                modeloTabla.setValueAt(String.format("%.2f", subtotal).replace(",", "."), filaExistente, 5);
-            } else {
-                // Si no existe, agregar nuevo producto
-                double subtotal = precio * cantidad;
-                modeloTabla.addRow(new Object[]{
-                    idProductoSeleccionado,
-                    nombreProductoSeleccionado.isEmpty() ? txtCodigoProd.getText() : nombreProductoSeleccionado,
-                    descripcionProductoSeleccionado.isEmpty() ? txtNombreProd.getText() : descripcionProductoSeleccionado,
-                    cantidad,
-                    String.format("%.2f", precio).replace(",", "."),
-                    String.format("%.2f", subtotal).replace(",", ".")
-                }
-                );
-
-            }
+            double subtotal = precio * cantidad;
+            modeloTabla.setValueAt(String.valueOf(cantidad), filaEditando, 3);
+            modeloTabla.setValueAt(String.format("%.2f", subtotal).replace(",", "."), filaEditando, 5);
+            btnAgregarProd.setText("Agregar a Factura");
+            btnAgregarProd.setBackground(new Color(34, 139, 34));
+            filaEditando = -1;
+            stockProductoEditando = 0;
 
             calcularTotales();
             limpiarCamposProducto();
-
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this,
-                    "Error en los datos del producto. Verifique el precio y stock.",
-                    "Error", JOptionPane.ERROR_MESSAGE);
+            return;
         }
+
+        // Buscar si el producto ya está en la tabla
+        int filaExistente = -1;
+        String codigoBuscar = nombreProductoSeleccionado.isEmpty() ? cmbProducto.getEditor().getItem().toString() : nombreProductoSeleccionado;
+        for (int i = 0; i < modeloTabla.getRowCount(); i++) {
+            if (modeloTabla.getValueAt(i, 1).equals(codigoBuscar)) {
+                filaExistente = i;
+                break;
+            }
+        }
+
+        if (filaExistente >= 0) {
+            // Si existe, actualizar la cantidad
+            int cantidadActual = Integer.parseInt(modeloTabla.getValueAt(filaExistente, 2).toString());
+            int nuevaCantidad = cantidadActual + cantidad;
+
+            if (nuevaCantidad > stock) {
+                JOptionPane.showMessageDialog(this,
+                        "No puede agregar mas. Stock disponible: " + stock
+                        + " | Actual: " + cantidadActual,
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            double subtotal = precio * nuevaCantidad;
+            modeloTabla.setValueAt(String.valueOf(nuevaCantidad), filaExistente, 3);
+            modeloTabla.setValueAt(String.format("%.2f", subtotal).replace(",", "."), filaExistente, 5);
+
+            if (filaEditando == filaExistente) {
+                filaEditando = -1;
+                btnAgregarProd.setText("Agregar a Factura");
+                btnAgregarProd.setBackground(new Color(34, 139, 34));
+            }
+        } else {
+            // Si no existe, agregar nuevo producto
+            double subtotal = precio * cantidad;
+            modeloTabla.addRow(new Object[]{
+                String.valueOf(idProductoSeleccionado),
+                nombreProductoSeleccionado.isEmpty() ? cmbProducto.getEditor().getItem().toString() : nombreProductoSeleccionado,
+                descripcionProductoSeleccionado.isEmpty() ? txtNombreProd.getText() : descripcionProductoSeleccionado,
+                String.valueOf(cantidad),
+                String.format("%.2f", precio).replace(",", "."),
+                String.format("%.2f", subtotal).replace(",", ".")
+            });
+        }
+
+        calcularTotales();
+        limpiarCamposProducto();
+
+    } catch (NumberFormatException e) {
+        JOptionPane.showMessageDialog(this,
+                "Error en los datos del producto. Verifique el precio y stock.",
+                "Error", JOptionPane.ERROR_MESSAGE);
     }
+}
 
     private void cargarProductoParaEditar(int fila) {
         try {
-            int idProducto = (int) modeloTabla.getValueAt(fila, 0);  // ← Obtener ID de la tabla
+            int idProducto = obtenerIdProductoDeTabla(fila);
             String codigo = (String) modeloTabla.getValueAt(fila, 1);
             String descripcion = (String) modeloTabla.getValueAt(fila, 2);
-            int cantidad = (int) modeloTabla.getValueAt(fila, 3);
+            int cantidad = Integer.parseInt(modeloTabla.getValueAt(fila, 3).toString());
             String precioStr = (String) modeloTabla.getValueAt(fila, 4);
             precioStr = precioStr.replace(",", ".");
             double precio = Double.parseDouble(precioStr);
 
-            // ✅ Buscar por ID en lugar de por nombre
+            //Buscar por ID en lugar de por nombre
             Producto producto = controlProducto.buscarProducto(idProducto);
             if (producto != null) {
                 stockProductoEditando = producto.getCantidad();
                 nombreProductoSeleccionado = producto.getNombre();
                 descripcionProductoSeleccionado = producto.getDescripcion();
+                precioProductoActual = producto.getPrecio();
+                stockProductoActual = producto.getCantidad();
             } else {
                 stockProductoEditando = 999;
             }
 
-            txtCodigoProd.setText(codigo);
+            cmbProducto.getEditor().setItem(codigo);
             txtNombreProd.setText(descripcion);
             txtPrecioProd.setText(String.valueOf(precio));
             txtStockProd.setText(String.valueOf(stockProductoEditando));
@@ -544,8 +602,8 @@ public class Internueva_venta extends JInternalFrame {
                     DetalleVenta detalle = new DetalleVenta();
 
                     // Obtener el ID del producto (columna 0 si la tienes)
-                    detalle.setIdProducto((int) modeloTabla.getValueAt(i, 0));
-                    detalle.setCantidad((int) modeloTabla.getValueAt(i, 3));
+                    detalle.setIdProducto(obtenerIdProductoDeTabla(i));
+                    detalle.setCantidad(Integer.parseInt(modeloTabla.getValueAt(i, 3).toString()));
                     detalle.setPreciounitario(Double.parseDouble(
                             ((String) modeloTabla.getValueAt(i, 4)).replace(",", ".")
                     ));
@@ -594,7 +652,7 @@ public class Internueva_venta extends JInternalFrame {
     }
 
     private void limpiarCamposProducto() {
-        txtCodigoProd.setText("");
+        cmbProducto.getEditor().setItem("");
         txtNombreProd.setText("");
         txtPrecioProd.setText("");
         txtStockProd.setText("");
@@ -606,7 +664,9 @@ public class Internueva_venta extends JInternalFrame {
         stockProductoEditando = 0;
         btnAgregarProd.setText("Agregar a Factura");
         btnAgregarProd.setBackground(new Color(34, 139, 34));
-        txtCodigoProd.requestFocus();
+        cmbProducto.requestFocus();
+        precioProductoActual = 0;
+        stockProductoActual = 0;
     }
 
     private void limpiarTodo() {
@@ -619,5 +679,13 @@ public class Internueva_venta extends JInternalFrame {
         txtSubtotal.setText("0.00");
         txtIva.setText("0.00");
         txtTotal.setText("0.00");
+    }
+
+    private int obtenerIdProductoDeTabla(int fila) {
+        try {
+            return Integer.parseInt(modeloTabla.getValueAt(fila, 0).toString());
+        } catch (Exception e) {
+            return 0;
+        }
     }
 }
