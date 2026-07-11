@@ -52,7 +52,7 @@ public class Ctrl_Categoria {
                 respuesta = true;
             }
 
-            // CORRECCIÓN 3: Cerramos la conexión para no saturar MySQL
+            // Cerramos la conexión para no saturar MySQL
             cn.close();
 
         } catch (SQLException e) {

@@ -31,4 +31,6 @@ public class Venta {
     
     public int getEstado() { return estado; }
     public void setEstado(int estado) { this.estado = estado; }
+    
+    
 }

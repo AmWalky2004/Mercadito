@@ -8,6 +8,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JDesktopPane;
 import reportes.Reportes;
 
+
 public class FrmMenu extends javax.swing.JFrame {
 
     public static JDesktopPane jDesktopPane_menu;
@@ -278,7 +279,25 @@ public class FrmMenu extends javax.swing.JFrame {
     }//GEN-LAST:event_reportes_ventasActionPerformed
 
     private void ver_historialActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ver_historialActionPerformed
-        // TODO add your handling code here:
+
+//Creamos la instancia de la vista
+InterHistorial ventanaHistorial = new InterHistorial();
+
+// Agregamos la ventana al contenedor de tu menú
+jDesktopPane_menu.add(ventanaHistorial);
+
+// declaramos las dimensiones correctas antes de mostrarla
+ventanaHistorial.setSize(600, 400); 
+
+// La hacemos visible, la traemos al frente y la seleccionamos
+ventanaHistorial.setVisible(true);
+ventanaHistorial.toFront();
+
+try {
+    ventanaHistorial.setSelected(true); 
+} catch (java.beans.PropertyVetoException e) {
+    System.out.println("Error al enfocar la ventana: " + e.getMessage());
+}
     }//GEN-LAST:event_ver_historialActionPerformed
 
     private void nueva_categoriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nueva_categoriaActionPerformed

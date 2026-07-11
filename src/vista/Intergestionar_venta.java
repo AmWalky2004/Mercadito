@@ -230,22 +230,30 @@ public class Intergestionar_venta extends JInternalFrame {
         modeloVentas.setRowCount(0); // Limpiar tabla
 
         List<modelo.Venta> ventas = controlVenta.listarVentas();
-
+ 
+       // Obtener datos del cliente
         for (modelo.Venta venta : ventas) {
-            // Obtener datos del cliente
+            
+            // Busca los datos del cliente asociado a la venta
             controlador.Ctrl_Cliente ctrlCliente = new controlador.Ctrl_Cliente();
+            // Busca el objeto del cliente usando la I almacenada
             modelo.Cliente cliente = ctrlCliente.buscarPorId(venta.getIdCliente());
 
+            // Si el cliente existe continua el programa, si no aparece un mensaje de error
             String nombreCliente = (cliente != null) ? cliente.getNombre() + " " + cliente.getApellido() : "Cliente no encontrado";
             String cedulaCliente = (cliente != null) ? cliente.getCedula() : "N/A";
 
+            // Evalua el estado, si es uno esta activa, de lo contrario  se considera anulada
             String estado = (venta.getEstado() == 1) ? "Activa" : "Anulada";
-
+            
+           // Agrega una nueva fila al componente visual de la tabla con los datos formateados
             modeloVentas.addRow(new Object[]{
+                // Formatea el ID de la venta con ceros a la izquierda
                 "FAC-" + String.format("%04d", venta.getIdCabeceraVenta()),
                 venta.getFechaventa(),
                 cedulaCliente,
                 nombreCliente,
+                //Formatea el valor monetario
                 String.format("%.2f", venta.getValorpagar()),
                 estado
             });
@@ -266,27 +274,39 @@ public class Intergestionar_venta extends JInternalFrame {
 
         // Cargar todas las ventas y luego filtrar
         List<modelo.Venta> ventas = controlVenta.listarVentas();
+        // Recupera la lista completa de ventas desde la capa controladora
         modeloVentas.setRowCount(0);
-
+        
+         // Recorre cada una de la ventas obtenidas
         for (modelo.Venta venta : ventas) {
+            // Instancia para accecder a la busqueda de clientes
             controlador.Ctrl_Cliente ctrlCliente = new controlador.Ctrl_Cliente();
+            // Busca el cliente a traves del ID guadado
             modelo.Cliente cliente = ctrlCliente.buscarPorId(venta.getIdCliente());
-
+            
+            // genera el codigo de la factura
             String nroFactura = "FAC-" + String.format("%04d", venta.getIdCabeceraVenta());
+            // Si el cliente existe, continua el programa si no da error
             String cedulaCliente = (cliente != null) ? cliente.getCedula() : "N/A";
+            //Si la cedula cliente existe continua el programa, si no aparece un mensaje de error
             String nombreCliente = (cliente != null) ? cliente.getNombre() + " " + cliente.getApellido() : "Cliente no encontrado";
+            // estado numerico
             String estado = (venta.getEstado() == 1) ? "Activa" : "Anulada";
-
+            
+            // Valida si cada paraemtro coincide con lo buscado
             boolean cumpleFactura = fFactura.isEmpty() || nroFactura.toLowerCase().contains(fFactura);
             boolean cumpleCliente = fCliente.isEmpty() || cedulaCliente.equals(fCliente);
             boolean cumpleEstado = fEstado.equals("Todos") || estado.equals(fEstado);
-
+            
+            // Evalua si el regitro cumple con las tres condiciones en paralelo
             if (cumpleFactura && cumpleCliente && cumpleEstado) {
+                // agrega fila al componente visual unicacmente si paso los filtros anteriores
                 modeloVentas.addRow(new Object[]{
                     nroFactura,
                     venta.getFechaventa(),
                     cedulaCliente,
                     nombreCliente,
+                    // formatea el monto final de la venta a dos posiciones decimales
                     String.format("%.2f", venta.getValorpagar()),
                     estado
                 });
@@ -319,14 +339,19 @@ public class Intergestionar_venta extends JInternalFrame {
 
         // Tabla de detalles
         String[] colsDetalle = {"Código", "Producto", "Cantidad", "Precio Unitario ($)", "Subtotal ($)"};
+        // Iniciando el encabezado y empezando en cero filas
         DefaultTableModel modDetalle = new DefaultTableModel(colsDetalle, 0);
+        //Inicia componente visual
         JTable tDetalle = new JTable(modDetalle);
+        // Definicion de altura
         tDetalle.setRowHeight(20);
 
         // Cargar detalles reales desde la base de datos
         List<modelo.DetalleVenta> detalles = controlVenta.listarDetalles(idVenta);
+        //Instacia del contralador de producto para consultar descripcion de la venta
         controlador.Ctrl_Producto ctrlProducto = new controlador.Ctrl_Producto();
 
+        // Recorre cada uno de los articulos pertenencientes a la venta
         for (modelo.DetalleVenta detalle : detalles) {
             modelo.Producto producto = ctrlProducto.buscarProducto(detalle.getIdProducto());
             String nombreProducto = (producto != null) ? producto.getNombre() : "Producto no encontrado";

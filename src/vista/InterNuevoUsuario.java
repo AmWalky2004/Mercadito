@@ -25,6 +25,7 @@ public class InterNuevoUsuario extends javax.swing.JInternalFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jColorChooser2 = new javax.swing.JColorChooser();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -42,6 +43,7 @@ public class InterNuevoUsuario extends javax.swing.JInternalFrame {
         combobox_rol = new javax.swing.JComboBox<>();
         BOTONGUARDAR = new javax.swing.JButton();
         wallpaper = new javax.swing.JLabel();
+        jColorChooser1 = new javax.swing.JColorChooser();
 
         setClosable(true);
         setIconifiable(true);
@@ -105,6 +107,7 @@ public class InterNuevoUsuario extends javax.swing.JInternalFrame {
 
         wallpaper.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/fondo2.jpg"))); // NOI18N
         getContentPane().add(wallpaper, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 390, 290));
+        getContentPane().add(jColorChooser1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, -20, -1, -1));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -203,6 +206,8 @@ public class InterNuevoUsuario extends javax.swing.JInternalFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton BOTONGUARDAR;
     private javax.swing.JComboBox<String> combobox_rol;
+    private javax.swing.JColorChooser jColorChooser1;
+    private javax.swing.JColorChooser jColorChooser2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
